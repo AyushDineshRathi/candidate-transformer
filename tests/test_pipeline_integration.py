@@ -26,7 +26,7 @@ def test_pipeline_no_github_url(mock_get, temp_csv):
     mock_get.assert_not_called()
     
     candidates = results["candidates"]
-    stats = results["stats"]
+    stats = results["run_metadata"]
     assert len(candidates) == 1
     assert stats["processed"] == 1
     assert stats["merged"] == 1
@@ -62,7 +62,7 @@ def test_pipeline_garbage_csv(mock_get, temp_csv):
     results = run_pipeline(csv_path)
     
     assert len(results["candidates"]) == 0
-    assert results["stats"]["merged"] == 0
+    assert results["run_metadata"]["merged"] == 0
 
 @patch("src.extractors.github_extractor.requests.get")
 def test_pipeline_entity_resolution_conflict(mock_get, temp_csv):
@@ -81,7 +81,7 @@ def test_pipeline_entity_resolution_conflict(mock_get, temp_csv):
     results = run_pipeline(csv_path)
     
     candidates = results["candidates"]
-    stats = results["stats"]
+    stats = results["run_metadata"]
     
     assert stats["processed"] == 2
     assert stats["merged"] == 1
@@ -175,7 +175,7 @@ def test_pipeline_3way_merge_csv_ats_github(mock_get, temp_csv, tmp_path):
     results = run_pipeline(csv_path, ats_path=str(ats_path))
     
     candidates = results["candidates"]
-    stats = results["stats"]
+    stats = results["run_metadata"]
     
     # Should result in exactly 1 merged candidate
     assert len(candidates) == 1

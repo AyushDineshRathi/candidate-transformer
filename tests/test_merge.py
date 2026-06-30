@@ -105,3 +105,23 @@ def test_disagreement_applies_confidence_penalty():
     res_without = resolve_field(values_without, "full_name")
     
     assert res_with.confidence < res_without.confidence
+
+def test_phone_match_merges_candidates_with_no_shared_email_or_github():
+    e1 = RawExtraction(candidate_id="1")
+    e1.full_name = ("Ayush Rathi", Provenance("csv", "name", "csv", 1.0))
+    e1.emails = [("ayush@example.com", Provenance("csv", "email", "csv", 1.0))]
+    e1.phones = [("+91 7249381902", Provenance("csv", "phone", "csv", 1.0))]
+    
+    e2 = RawExtraction(candidate_id="2")
+    e2.full_name = ("Ayush Rathi", Provenance("resume", "name", "regex", 0.6))
+    e2.phones = [("7249381902", Provenance("resume", "phone", "regex", 0.6))]
+    
+    candidates = cluster_extractions([e1, e2])
+    assert len(candidates) == 1
+    
+    merged = merge_candidates([e1, e2])
+    assert len(merged) == 1
+    assert merged[0].full_name.value == "Ayush Rathi"
+    
+    phones = [p.value for p in merged[0].phones]
+    assert "+91 7249381902" in phones

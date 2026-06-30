@@ -19,20 +19,29 @@ export GITHUB_API="your_token_here"
 **1. Default Output (No custom config)**
 Run the pipeline falling back on the standard exhaustive schema:
 ```bash
-python cli.py --csv sample_data/recruiter_export.csv --out output_default.json
+python cli.py run --csv sample_data/recruiter_export.csv --ats sample_data/ats_export.json --out output_default.json
 ```
 
 **2. Custom Projection Configuration**
 Run the pipeline passing a custom configuration payload to selectively map, rename, and standardize the final output:
 ```bash
-python cli.py --csv sample_data/recruiter_export.csv --config config/sample_projection_config.json --out output_custom.json
+python cli.py run --csv sample_data/recruiter_export.csv --config config/sample_projection_config.json --out output_custom.json
 ```
 
-*Note: The generated examples are saved in `output_default.json` and `output_custom.json`.*
+*Note: The generated examples are saved in `output_default.json` and `output_custom.json`. The output shape contains a top-level object wrapper `{ "candidates": [...], "possible_duplicates": [...], "run_metadata": {...} }`.*
 
 ```bash
 python cli.py explain --db candidates.sqlite3 --all --flagged-only
 ```
+
+## Evaluation
+
+We maintain a rigorous gold-set evaluation harness to mathematically prove entity resolution and field-conflict resolution correctness against hand-verified truth.
+
+```bash
+python scripts/run_gold_eval.py
+```
+This runs the pipeline on controlled `tests/gold_eval/gold_input/` mock data and calculates field/entity accuracy against `tests/gold_eval/gold_expected.json`.
 
 ## Web UI Demo Tool
 
@@ -47,7 +56,9 @@ python cli.py serve
 
 - **Extraction**: Clean functional interfaces per data source. Each returns raw tuples with Confidence and Provenance metadata attached immediately at birth.
 - **Normalization**: Pure functions mapping ugly strings to consistent canonical structures.
-- **Merge**: Smart conflict resolution utilizing provenance-based confidence decaying and source prioritization, structurally deduplicates matches via strict deterministic Join Keys (GitHub URL -> Primary Email), and records granular confidence scores representing field-level agreements.
+- **Merge**: Smart conflict resolution utilizing provenance-based confidence decaying and source prioritization, structurally deduplicates matches via strict deterministic Join Keys (GitHub URL -> Primary Email -> Phone), and records granular confidence scores representing field-level agreements.
+- **Confidence Model**: All confidence weights and disagreement penalties are externalized into `config/source_confidence.json`, ensuring the scoring system is transparent and tuneable.
+- **Duplicate Suggestions**: An explicit secondary pass built on `rapidfuzz` scoring that flags probable duplicates for human review without mutating deterministic merge clusters.
 - **Projection**: Resolves dot-notation JSON paths and array-maps to cleanly transform the heavy canonical object schema directly into flexible payload mappings per customer configurations.
 - **Validation**: Absorbs the payloads natively asserting conformity against the JSON schema definitions while explicitly preventing ungraceful pipeline death on corrupt values.
 
@@ -60,6 +71,11 @@ python cli.py serve
 
 ## Descoped Functionality
 
-- **Fuzzy Name Matching**: Specifically descoped intentionally to strictly enforce precision over recall. Implementing ML clustering or fuzzy Jaro-Winkler analysis frequently corrupts disparate contacts sharing similar generic titles. The merge strictly requires a hard GitHub or Email Join Key.
-- **Resume Parsing**: Excluded due to the unreliability of zero-shot parsing against fragmented PDF variants without a robust cloud OCR layer.
+- **Fuzzy Name Matching**: Specifically descoped intentionally to strictly enforce precision over recall. Implementing ML clustering or fuzzy Jaro-Winkler analysis frequently corrupts disparate contacts sharing similar generic titles. The merge strictly requires a hard GitHub, Email, or Phone Join Key. Entity resolution beyond exact-match keys is surfaced as a reviewable suggestion inside the `possible_duplicates` key, never auto-applied.
+- **Resume Parsing**: Restricted strictly to rule-based logic to preserve deterministic behavior and transparency over stochastic NLP / ML extraction.
 - **Database / Queue Infrastructure**: Operates cleanly as a stateless CLI utilizing single-process extraction for scope alignment instead of distributed workers, allowing instantaneous deployment mapping without dependencies.
+
+## Known Limitations
+
+- **Rule-Based Entity Resolution Boundaries**: Auto-merge logic aggressively relies on matching Emails, GitHub links, and normalized Phone numbers. Highly isolated legacy profiles sharing zero determinable keys (but sharing matching generic names and job experience) will purposefully not cluster to prevent collateral corruption.
+- **Duplicates Panel Uncertainty**: The Duplicate Suggestions UI acts as a safety layer flagging non-auto-merged candidates. It bounds scores between 0-1, yet since it is rule-based and lacks semantic vectors, extremely generic names may yield lower-confidence false positives or rank true matches lower based on incomplete structured signals. This remains explicitly designed for human-in-the-loop review.

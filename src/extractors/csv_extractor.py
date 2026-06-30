@@ -10,11 +10,15 @@ from src.models import RawExtraction, Provenance
 
 logger = logging.getLogger(__name__)
 
-def extract_from_csv(path: str) -> list[RawExtraction]:
+def extract_from_csv(path: str, conf_config: dict | None = None) -> list[RawExtraction]:
     """
     Reads candidate data from a CSV file and produces RawExtractions.
     Handles missing files, empty rows, and malformed fields.
     """
+    if conf_config is None:
+        conf_config = {}
+    base_conf = conf_config.get("recruiter.csv", 1.0)
+    
     extractions = []
     
     try:
@@ -38,19 +42,20 @@ def extract_from_csv(path: str) -> list[RawExtraction]:
                 
                 name = get_val('name')
                 if name:
-                    prov = Provenance("recruiter.csv", "name", "csv_row", 1.0)
+                    prov = Provenance("recruiter.csv", "name", "csv_row", base_conf)
                     extraction.full_name = (name, prov)
                 
                 email = get_val('email')
                 if email:
                     # 3. Malformed email (no "@") -> lower confidence (0.4) rather than dropping it.
-                    conf = 1.0 if "@" in email else 0.4
+                    # Hardcoded relative penalty, scaled by base_conf
+                    conf = base_conf if "@" in email else (base_conf * 0.4)
                     prov = Provenance("recruiter.csv", "email", "csv_row", conf)
                     extraction.emails.append((email, prov))
                 
                 phone = get_val('phone')
                 if phone:
-                    prov = Provenance("recruiter.csv", "phone", "csv_row", 1.0)
+                    prov = Provenance("recruiter.csv", "phone", "csv_row", base_conf)
                     extraction.phones.append((phone, prov))
                 
                 company = get_val('current_company')
@@ -63,13 +68,13 @@ def extract_from_csv(path: str) -> list[RawExtraction]:
                         "end": None,
                         "summary": None
                     }
-                    prov = Provenance("recruiter.csv", "current_company,title", "csv_row", 1.0)
+                    prov = Provenance("recruiter.csv", "current_company,title", "csv_row", base_conf)
                     extraction.experience.append((exp_dict, prov))
                 
                 github_url = get_val('github_url')
                 if github_url:
                     links_dict: dict[str, Any] = {"github": github_url}
-                    prov = Provenance("recruiter.csv", "github_url", "csv_row", 1.0)
+                    prov = Provenance("recruiter.csv", "github_url", "csv_row", base_conf)
                     extraction.links = (links_dict, prov)
                 
                 loc_str = get_val('location')
@@ -79,7 +84,7 @@ def extract_from_csv(path: str) -> list[RawExtraction]:
                         loc_dict = {"city": parts[0], "region": None, "country": parts[-1]}
                     else:
                         loc_dict = {"city": loc_str, "region": None, "country": None}
-                    prov = Provenance("recruiter.csv", "location", "csv_row", 1.0)
+                    prov = Provenance("recruiter.csv", "location", "csv_row", base_conf)
                     extraction.location = (loc_dict, prov)
                 
                 # If we didn't extract any known field (garbage row), skip it

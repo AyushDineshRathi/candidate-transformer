@@ -1,0 +1,11 @@
+{
+  "recruiter.csv": 1.0,
+  "ats.json": 0.95,
+  "github_api": 0.7,
+  "github_api_repo_language_skill": 0.5,
+  "resume_pdf": 0.6,
+  "resume_docx": 0.6,
+  "resume_skill_section": 0.4,
+  "fuzzy_skill_match_penalty_multiplier": 0.95,
+  "field_disagreement_penalty_multiplier": 0.9
+}

@@ -4,13 +4,23 @@
     <h2 style="margin-top: 0;">Run Pipeline</h2>
     <form action="/run" method="post" enctype="multipart/form-data">
         <div class="form-group">
-            <label class="form-label" for="csv_file">Recruiter CSV (Required)</label>
-            <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+            <label class="form-label" for="csv_file">Recruiter CSV (Optional)</label>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv">
         </div>
         
         <div class="form-group">
             <label class="form-label" for="ats_file">ATS JSON (Optional)</label>
             <input type="file" id="ats_file" name="ats_file" accept=".json">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="resume_files">Resumes (PDF/DOCX, Optional)</label>
+            <input type="file" id="resume_files" name="resume_files" accept=".pdf,.docx" multiple>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label" for="github_url">Standalone GitHub URL (Optional)</label>
+            <input type="url" id="github_url" name="github_url" placeholder="https://github.com/username">
         </div>
         
         <div class="form-group">

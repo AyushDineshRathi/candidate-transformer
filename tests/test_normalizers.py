@@ -62,3 +62,50 @@ def test_normalize_name():
     assert normalize_name("DeShawn") == "DeShawn"
     assert normalize_name("") == ""
     assert normalize_name(None) == ""
+
+from src.normalizers import SkillCanonicalizer
+
+def test_skill_canonicalizer():
+    canonicalizer = SkillCanonicalizer()
+    
+    # Exact match from taxonomy
+    canon, path = canonicalizer.normalize("react.js")
+    assert canon == "React"
+    assert path == "exact_alias"
+    
+    # Fuzzy match (react js should fuzzy match the canonical "React")
+    canon, path = canonicalizer.normalize("React JS")
+    assert canon == "React"
+    assert path == "fuzzy_match"
+    
+    # Title-Case fallback (never seen before)
+    canon, path = canonicalizer.normalize("Redux")
+    assert canon == "Redux"
+    assert path == "title_case_fallback"
+    
+    # Near-miss below threshold (React and Redux)
+    # Even if "React" is in seen canonicals, "Redux" should not fuzzy match "React"
+    # Wait, "Redux" was just added to seen_canonical above. Let's try something else.
+    canon, path = canonicalizer.normalize("Reacta") 
+    # Token sort ratio between 'Reacta' and 'React' is 90.9, which is > 90!
+    # So "Reacta" will fuzzy match "React".
+    # We need a near-miss BELOW 90. 
+    # "Redux" vs "React" ratio is 40.0. Let's test "Redux" again after "React" is known.
+    
+    canonicalizer = SkillCanonicalizer()
+    canonicalizer.normalize("react.js") # establishes "React"
+    canon, path = canonicalizer.normalize("Redux")
+    assert canon == "Redux"
+    assert path == "title_case_fallback" # NOT fuzzy match to React
+    
+    # Test confidence penalty logic (simulating pipeline.py)
+    from src.models import Provenance
+    import dataclasses
+    prov = Provenance(source="test", source_field="skills", method="test", confidence=1.0)
+    
+    canon, path = canonicalizer.normalize("React JS")
+    if path == "fuzzy_match":
+        prov = dataclasses.replace(prov, confidence=prov.confidence * 0.95)
+    
+    assert prov.confidence == 0.95
+    assert path == "fuzzy_match"

@@ -1,0 +1,36 @@
+{
+  "https://api.github.com/users/ada": {
+    "status": 200,
+    "json": {
+      "name": "Ada L",
+      "email": "ada@analytics.com",
+      "company": "Babbage Institute",
+      "location": "London",
+      "html_url": "https://github.com/ada"
+    }
+  },
+  "https://api.github.com/users/ada/repos?sort=updated&per_page=10": {
+    "status": 200,
+    "json": [
+      {"language": "Python"},
+      {"language": "Python"}
+    ]
+  },
+  "https://api.github.com/users/torvalds": {
+    "status": 200,
+    "json": {
+      "name": "Linus Torvalds",
+      "email": "linus@linux.org",
+      "company": "Linux Foundation",
+      "location": "Portland, OR",
+      "html_url": "https://github.com/torvalds"
+    }
+  },
+  "https://api.github.com/users/torvalds/repos?sort=updated&per_page=10": {
+    "status": 200,
+    "json": [
+      {"language": "C"},
+      {"language": "C"}
+    ]
+  }
+}

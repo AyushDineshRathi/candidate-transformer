@@ -28,10 +28,14 @@ def _get_github_token() -> str | None:
         pass
     return None
 
-def extract_from_github(username: str) -> RawExtraction | None:
+def extract_from_github(username: str, conf_config: dict | None = None, canonicalizer=None) -> RawExtraction | None:
     """
     Extracts candidate data from GitHub REST API.
     """
+    if conf_config is None:
+        conf_config = {}
+    base_conf = conf_config.get("github_api", 0.7)
+    lang_conf = conf_config.get("github_api_repo_language_skill", 0.5)
     headers = {"Accept": "application/vnd.github.v3+json"}
     token = _get_github_token()
     if token:
@@ -89,17 +93,17 @@ def extract_from_github(username: str) -> RawExtraction | None:
 
     name = get_val(profile_data, 'name')
     if name:
-        prov = Provenance("github_api", "name", "github_rest_api", 0.7)
+        prov = Provenance("github_api", "name", "github_rest_api", base_conf)
         extraction.full_name = (name, prov)
         
     bio = get_val(profile_data, 'bio')
     if bio:
-        prov = Provenance("github_api", "bio", "github_rest_api", 0.7)
+        prov = Provenance("github_api", "bio", "github_rest_api", base_conf)
         extraction.headline = (bio, prov)
         
     location = get_val(profile_data, 'location')
     if location:
-        prov = Provenance("github_api", "location", "github_rest_api", 0.7)
+        prov = Provenance("github_api", "location", "github_rest_api", base_conf)
         loc_dict: dict[str, Any] = {"city": location, "region": None, "country": None}
         extraction.location = (loc_dict, prov)
         
@@ -110,7 +114,7 @@ def extract_from_github(username: str) -> RawExtraction | None:
     if blog:
         links_dict["portfolio"] = blog
         
-    links_prov = Provenance("github_api", "html_url/blog", "github_rest_api", 0.7)
+    links_prov = Provenance("github_api", "html_url/blog", "github_rest_api", base_conf)
     extraction.links = (links_dict, links_prov)
     
     company = get_val(profile_data, 'company')
@@ -122,7 +126,7 @@ def extract_from_github(username: str) -> RawExtraction | None:
             "end": None,
             "summary": None
         }
-        prov = Provenance("github_api", "company", "github_rest_api", 0.7)
+        prov = Provenance("github_api", "company", "github_rest_api", base_conf)
         extraction.experience.append((exp_dict, prov))
         
     # Process skills
@@ -138,16 +142,14 @@ def extract_from_github(username: str) -> RawExtraction | None:
             top_10 = [item[0] for item in counter.most_common(10)]
             
             for lang in top_10:
-                prov = Provenance("github_api", "repos[].language", "github_rest_api", 0.5)
-                # Keep proper casing logic for known languages if desired, but title() works for now.
-                # Actually, some languages like "JavaScript" vs "javascript".
-                # For simplicity, let's just title case. E.g. python -> Python, html -> Html.
-                skill_name = lang.title() 
-                if skill_name == "Javascript": skill_name = "JavaScript"
-                if skill_name == "Typescript": skill_name = "TypeScript"
-                if skill_name == "Html": skill_name = "HTML"
-                if skill_name == "Css": skill_name = "CSS"
-                
-                extraction.skills.append((skill_name, prov))
+                if canonicalizer:
+                    from src.normalizers import normalize_skill_with_path
+                    canon_lang, match_path = normalize_skill_with_path(lang, canonicalizer)
+                    if canon_lang:
+                        prov = Provenance("github_api", "repos[].language", f"github_rest_api ({match_path})", lang_conf)
+                        extraction.skills.append((canon_lang, prov))
+                else:
+                    prov = Provenance("github_api", "repos[].language", "github_rest_api", lang_conf)
+                    extraction.skills.append((lang.title(), prov))
                 
     return extraction

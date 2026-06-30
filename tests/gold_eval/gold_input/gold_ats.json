@@ -1,0 +1,35 @@
+{
+  "candidates": [
+    {
+      "ats_record_id": "ats_1",
+      "personal": {
+        "displayName": "Linus B. Torvalds",
+        "contact": {
+          "primaryEmail": "linus@linux.org",
+          "mobile": "+1-555-123-0101"
+        }
+      },
+      "employment": {
+        "employer": "Linux Foundation",
+        "jobTitle": "Lead Engineer"
+      },
+      "tags": ["C", "C++"],
+      "geo": "Portland"
+    },
+    {
+      "ats_record_id": "ats_2",
+      "personal": {
+        "displayName": "Grace Hopper",
+        "contact": {
+          "primaryEmail": "grace@navy.mil"
+        }
+      },
+      "employment": {
+        "employer": "US Navy",
+        "jobTitle": "Admiral"
+      },
+      "tags": ["COBOL", "Compiler Design"],
+      "geo": "Arlington, VA"
+    }
+  ]
+}

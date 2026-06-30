@@ -5,8 +5,6 @@ Responsible for scoring and assigning confidence metrics to merged candidate dat
 from typing import Any
 from src.models import Provenance, CanonicalCandidate
 
-DISAGREEMENT_PENALTY = 0.9  # Tunable constant
-
 def combine_confidence(confidences: list[float]) -> float:
     """
     Combines multiple confidences using the evidence accumulation formula:
@@ -26,7 +24,7 @@ def combine_confidence(confidences: list[float]) -> float:
     combined = 1.0 - prob_all_wrong
     return max(0.0, min(1.0, combined))
 
-def field_confidence(values_and_provenance: list[tuple[Any, Provenance]], winning_value: Any) -> float:
+def field_confidence(values_and_provenance: list[tuple[Any, Provenance]], winning_value: Any, conf_config: dict | None = None) -> float:
     """
     Computes final confidence for a resolved field value.
     - Uses evidence accumulation if multiple sources support the exact same value.
@@ -53,7 +51,10 @@ def field_confidence(values_and_provenance: list[tuple[Any, Provenance]], winnin
         base_conf = combine_confidence(supporting_confidences)
         
     if disagreement_exists:
-        base_conf *= DISAGREEMENT_PENALTY
+        if conf_config is None:
+            conf_config = {}
+        penalty = conf_config.get("field_disagreement_penalty_multiplier", 0.9)
+        base_conf *= penalty
         
     return max(0.0, min(1.0, base_conf))
 

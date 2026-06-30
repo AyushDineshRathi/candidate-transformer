@@ -1,0 +1,440 @@
+[
+  {
+    "candidate_id": "25a107d2-8f91-50a3-ad81-d11775cff5b3",
+    "full_name": {
+      "value": "Linus Torvalds",
+      "confidence": 0.9,
+      "provenance": [
+        {
+          "source": "recruiter.csv",
+          "source_field": "name",
+          "method": "csv_row",
+          "confidence": 1.0
+        },
+        {
+          "source": "github_api",
+          "source_field": "name",
+          "method": "github_rest_api",
+          "confidence": 0.7
+        },
+        {
+          "source": "ats.json",
+          "source_field": "personal.displayName",
+          "method": "ats_json_parser",
+          "confidence": 0.95
+        }
+      ],
+      "conflicting_values": [
+        {
+          "value": "Linus B. Torvalds",
+          "source": "ats.json",
+          "confidence": 0.95
+        }
+      ]
+    },
+    "emails": [
+      {
+        "value": "linus@linux.org",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "email",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "ats.json",
+            "source_field": "personal.contact.primaryEmail",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      }
+    ],
+    "phones": [],
+    "location": {
+      "value": {
+        "city": "Portland",
+        "region": null,
+        "country": "GB"
+      },
+      "confidence": 0.9,
+      "provenance": [
+        {
+          "source": "recruiter.csv",
+          "source_field": "location",
+          "method": "csv_row",
+          "confidence": 1.0
+        },
+        {
+          "source": "ats.json",
+          "source_field": "geo",
+          "method": "ats_json_parser",
+          "confidence": 0.95
+        },
+        {
+          "source": "github_api",
+          "source_field": "location",
+          "method": "github_rest_api",
+          "confidence": 0.7
+        }
+      ],
+      "conflicting_values": [
+        {
+          "value": {
+            "city": "Portland",
+            "region": null,
+            "country": null
+          },
+          "source": "ats.json",
+          "confidence": 0.95
+        },
+        {
+          "value": {
+            "city": "Portland, OR",
+            "region": null,
+            "country": null
+          },
+          "source": "github_api",
+          "confidence": 0.7
+        }
+      ]
+    },
+    "links": {
+      "linkedin": null,
+      "github": "https://github.com/torvalds",
+      "portfolio": null,
+      "other": []
+    },
+    "headline": null,
+    "years_experience": null,
+    "skills": [
+      {
+        "value": "C",
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "tags",
+            "method": "ats_json_parser (title_case_fallback)",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      {
+        "value": "C++",
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "tags",
+            "method": "ats_json_parser (exact_alias)",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      }
+    ],
+    "experience": [
+      {
+        "company": "Linux Foundation",
+        "title": "Creator",
+        "start": null,
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "Linux Foundation",
+        "title": "Lead Engineer",
+        "start": null,
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "Linux Foundation",
+        "title": null,
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": [],
+    "overall_confidence": 0.712,
+    "needs_human_review": false
+  },
+  {
+    "candidate_id": "8559e946-e082-5643-a8cb-ce72fca89dc7",
+    "full_name": {
+      "value": "Ada Lovelace",
+      "confidence": 0.9,
+      "provenance": [
+        {
+          "source": "recruiter.csv",
+          "source_field": "name",
+          "method": "csv_row",
+          "confidence": 1.0
+        },
+        {
+          "source": "github_api",
+          "source_field": "name",
+          "method": "github_rest_api",
+          "confidence": 0.7
+        }
+      ],
+      "conflicting_values": [
+        {
+          "value": "Ada L",
+          "source": "github_api",
+          "confidence": 0.7
+        }
+      ]
+    },
+    "emails": [
+      {
+        "value": "ada@analytics.com",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "email",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      }
+    ],
+    "phones": [],
+    "location": {
+      "value": {
+        "city": "London",
+        "region": null,
+        "country": "GB"
+      },
+      "confidence": 0.9,
+      "provenance": [
+        {
+          "source": "recruiter.csv",
+          "source_field": "location",
+          "method": "csv_row",
+          "confidence": 1.0
+        },
+        {
+          "source": "github_api",
+          "source_field": "location",
+          "method": "github_rest_api",
+          "confidence": 0.7
+        }
+      ],
+      "conflicting_values": [
+        {
+          "value": {
+            "city": "London",
+            "region": null,
+            "country": null
+          },
+          "source": "github_api",
+          "confidence": 0.7
+        }
+      ]
+    },
+    "links": {
+      "linkedin": null,
+      "github": "https://github.com/ada",
+      "portfolio": null,
+      "other": []
+    },
+    "headline": null,
+    "years_experience": null,
+    "skills": [],
+    "experience": [
+      {
+        "company": "Babbage Inc",
+        "title": "Developer",
+        "start": null,
+        "end": null,
+        "summary": null
+      },
+      {
+        "company": "Babbage Institute",
+        "title": null,
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": [],
+    "overall_confidence": 0.475,
+    "needs_human_review": true
+  },
+  {
+    "candidate_id": "25d3513c-aaf9-5c03-bb94-af6e15b1d5e1",
+    "full_name": {
+      "value": "Alan Turing",
+      "confidence": 1.0,
+      "provenance": [
+        {
+          "source": "recruiter.csv",
+          "source_field": "name",
+          "method": "csv_row",
+          "confidence": 1.0
+        }
+      ],
+      "conflicting_values": []
+    },
+    "emails": [
+      {
+        "value": "alan@enigma.org",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "email",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      }
+    ],
+    "phones": [],
+    "location": {
+      "value": {
+        "city": "Bletchley",
+        "region": null,
+        "country": "GB"
+      },
+      "confidence": 1.0,
+      "provenance": [
+        {
+          "source": "recruiter.csv",
+          "source_field": "location",
+          "method": "csv_row",
+          "confidence": 1.0
+        }
+      ],
+      "conflicting_values": []
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": null,
+    "years_experience": null,
+    "skills": [],
+    "experience": [
+      {
+        "company": "Bletchley Park",
+        "title": "Cryptanalyst",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": [],
+    "overall_confidence": 0.5,
+    "needs_human_review": false
+  },
+  {
+    "candidate_id": "5b558847-d769-5e39-8406-7c93d2e53b34",
+    "full_name": {
+      "value": "Grace Hopper",
+      "confidence": 0.95,
+      "provenance": [
+        {
+          "source": "ats.json",
+          "source_field": "personal.displayName",
+          "method": "ats_json_parser",
+          "confidence": 0.95
+        }
+      ],
+      "conflicting_values": []
+    },
+    "emails": [
+      {
+        "value": "grace@navy.mil",
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "personal.contact.primaryEmail",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      }
+    ],
+    "phones": [],
+    "location": {
+      "value": {
+        "city": "Arlington",
+        "region": null,
+        "country": "VA"
+      },
+      "confidence": 0.95,
+      "provenance": [
+        {
+          "source": "ats.json",
+          "source_field": "geo",
+          "method": "ats_json_parser",
+          "confidence": 0.95
+        }
+      ],
+      "conflicting_values": []
+    },
+    "links": {
+      "linkedin": null,
+      "github": null,
+      "portfolio": null,
+      "other": []
+    },
+    "headline": null,
+    "years_experience": null,
+    "skills": [
+      {
+        "value": "Cobol",
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "tags",
+            "method": "ats_json_parser (title_case_fallback)",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      {
+        "value": "Compiler Design",
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "tags",
+            "method": "ats_json_parser (title_case_fallback)",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      }
+    ],
+    "experience": [
+      {
+        "company": "US Navy",
+        "title": "Admiral",
+        "start": null,
+        "end": null,
+        "summary": null
+      }
+    ],
+    "education": [],
+    "overall_confidence": 0.712,
+    "needs_human_review": false
+  }
+]

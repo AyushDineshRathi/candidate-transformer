@@ -1,0 +1,4 @@
+name,email,phone,current_company,title,github_url,location
+Linus Torvalds,linus@linux.org,555-123-0101,Linux Foundation,Creator,https://github.com/torvalds,"Portland, OR"
+Ada Lovelace,ada@analytics.com,555-123-0202,Babbage Inc,Developer,https://github.com/ada,"London, UK"
+Alan Turing,alan@enigma.org,555-123-0303,Bletchley Park,Cryptanalyst,,"Bletchley, UK"

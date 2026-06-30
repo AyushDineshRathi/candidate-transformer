@@ -158,18 +158,52 @@ def normalize_location(raw: str | dict) -> dict:
             
     return result
 
+from rapidfuzz import fuzz, utils
+
+class SkillCanonicalizer:
+    def __init__(self, taxonomy: dict[str, str] | None = None, fuzzy_threshold: float = 90.0):
+        self.taxonomy = taxonomy if taxonomy is not None else DEFAULT_SKILL_TAXONOMY
+        self.fuzzy_threshold = fuzzy_threshold
+        self.seen_canonical = set()
+
+    def normalize(self, raw: str) -> tuple[str, str]:
+        if not raw or not str(raw).strip():
+            return "", "empty"
+            
+        clean = str(raw).strip().lower()
+        
+        # 1. Exact alias dictionary
+        if clean in self.taxonomy:
+            canon = self.taxonomy[clean]
+            self.seen_canonical.add(canon)
+            return canon, "exact_alias"
+            
+        # 2. Fuzzy match against ALREADY SEEN canonical skills
+        best_match = None
+        best_score = 0.0
+        
+        for seen in self.seen_canonical:
+            # Use token_set_ratio instead of token_sort_ratio so that "React JS" matches "React" (100)
+            score = fuzz.token_set_ratio(clean, seen, processor=utils.default_process)
+            if score > best_score:
+                best_score = score
+                best_match = seen
+                
+        if best_match and best_score >= self.fuzzy_threshold:
+            return best_match, "fuzzy_match"
+            
+        # 3. Title-Case fallback
+        canon = str(raw).strip().title()
+        self.seen_canonical.add(canon)
+        return canon, "title_case_fallback"
+
 def normalize_skill(raw: str, taxonomy: dict[str, str] | None = None) -> str:
-    if not raw or not str(raw).strip():
-        return ""
-        
-    tax = taxonomy if taxonomy is not None else DEFAULT_SKILL_TAXONOMY
-    
-    clean = str(raw).strip().lower()
-    if clean in tax:
-        return tax[clean]
-        
-    # Title-Cased as a best-effort canonical form
-    return str(raw).strip().title()
+    # Legacy wrapper for backwards compatibility
+    canon, _ = SkillCanonicalizer(taxonomy).normalize(raw)
+    return canon
+
+def normalize_skill_with_path(raw: str, canonicalizer: SkillCanonicalizer) -> tuple[str, str]:
+    return canonicalizer.normalize(raw)
 
 def normalize_name(raw: str) -> str:
     """

@@ -1,7 +1,11 @@
 phonenumbers
 pycountry
-requests
-jsonschema
+requests==2.31.0
+jsonschema==4.21.1
 pytest
 python-dateutil
 Flask
+pdfplumber
+python-docx
+fpdf
+rapidfuzz

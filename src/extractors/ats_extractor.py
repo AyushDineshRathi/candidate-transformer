@@ -10,11 +10,15 @@ from src.models import RawExtraction, Provenance
 
 logger = logging.getLogger(__name__)
 
-def extract_from_ats_json(path: str) -> list[RawExtraction]:
+def extract_from_ats_json(path: str, conf_config: dict | None = None, canonicalizer=None) -> list[RawExtraction]:
     """
     Reads candidate data from an ATS JSON file and produces RawExtractions.
     Handles missing files, missing candidates array, and malformed fields gracefully.
     """
+    if conf_config is None:
+        conf_config = {}
+    base_conf = conf_config.get("ats.json", 0.95)
+    
     extractions = []
     
     try:
@@ -49,17 +53,17 @@ def extract_from_ats_json(path: str) -> list[RawExtraction]:
             
             name = safe_get(personal, "displayName")
             if name and isinstance(name, str) and name.strip():
-                prov = Provenance("ats.json", "personal.displayName", "ats_json_parser", 0.95)
+                prov = Provenance("ats.json", "personal.displayName", "ats_json_parser", base_conf)
                 extraction.full_name = (name.strip(), prov)
                 
             email = safe_get(personal, "contact", "primaryEmail")
             if email and isinstance(email, str) and email.strip():
-                prov = Provenance("ats.json", "personal.contact.primaryEmail", "ats_json_parser", 0.95)
+                prov = Provenance("ats.json", "personal.contact.primaryEmail", "ats_json_parser", base_conf)
                 extraction.emails.append((email.strip(), prov))
                 
             mobile = safe_get(personal, "contact", "mobile")
             if mobile and isinstance(mobile, str) and mobile.strip():
-                prov = Provenance("ats.json", "personal.contact.mobile", "ats_json_parser", 0.95)
+                prov = Provenance("ats.json", "personal.contact.mobile", "ats_json_parser", base_conf)
                 extraction.phones.append((mobile.strip(), prov))
                 
             employment = record.get("employment") or {}
@@ -80,19 +84,26 @@ def extract_from_ats_json(path: str) -> list[RawExtraction]:
                 if job_title: source_fields.append("employment.jobTitle")
                 if start_date: source_fields.append("employment.startDate")
                 
-                prov = Provenance("ats.json", ",".join(source_fields), "ats_json_parser", 0.95)
+                prov = Provenance("ats.json", ",".join(source_fields), "ats_json_parser", base_conf)
                 extraction.experience.append((exp_dict, prov))
                 
             tags = record.get("tags")
             if isinstance(tags, list):
                 for tag in tags:
                     if tag and isinstance(tag, str) and tag.strip():
-                        prov = Provenance("ats.json", "tags", "ats_json_parser", 0.95)
-                        extraction.skills.append((tag.strip(), prov))
+                        if canonicalizer:
+                            from src.normalizers import normalize_skill_with_path
+                            canon_tag, match_path = normalize_skill_with_path(tag.strip(), canonicalizer)
+                            if canon_tag:
+                                prov = Provenance("ats.json", "tags", f"ats_json_parser ({match_path})", base_conf)
+                                extraction.skills.append((canon_tag, prov))
+                        else:
+                            prov = Provenance("ats.json", "tags", "ats_json_parser", base_conf)
+                            extraction.skills.append((tag.strip(), prov))
                         
             geo = record.get("geo")
             if geo and isinstance(geo, str) and geo.strip():
-                prov = Provenance("ats.json", "geo", "ats_json_parser", 0.95)
+                prov = Provenance("ats.json", "geo", "ats_json_parser", base_conf)
                 extraction.location = (geo.strip(), prov)
                 
             if not any([

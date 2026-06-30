@@ -9,6 +9,7 @@ from typing import Any
 
 from src.models import RawExtraction, CanonicalCandidate, FieldValue, Provenance
 from src.confidence import field_confidence, overall_confidence
+from src.normalizers import normalize_phone
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ def cluster_extractions(extractions: list[RawExtraction]) -> list[list[RawExtrac
     Matching policy:
     1. Exact match on links.github (normalized URL/username)
     2. Exact match on normalized email
-    3. Treat as separate (no fuzzy matching) - Precision over recall. A wrong merge corrupts the record.
+    3. Exact match on normalized phone (no fuzzy matching - this is a deliberate scope boundary to avoid false-positive merges across different people who happen to share a truncated number pattern).
     """
     clusters = []
     
@@ -41,6 +42,13 @@ def cluster_extractions(extractions: list[RawExtraction]) -> list[list[RawExtrac
         for email_val, prov in ext.emails:
             if email_val:
                 emails.add(email_val.strip().lower())
+                
+        phones = set()
+        for phone_val, prov in ext.phones:
+            if phone_val:
+                norm_p = normalize_phone(phone_val)
+                if norm_p:
+                    phones.add(norm_p)
                 
         for cluster in clusters:
             cluster_match = False
@@ -63,6 +71,17 @@ def cluster_extractions(extractions: list[RawExtraction]) -> list[list[RawExtrac
                 if not cluster_match and emails.intersection(c_emails):
                     cluster_match = True
                     break
+                    
+                c_phones = set()
+                for p_val, _ in c_ext.phones:
+                    if p_val:
+                        norm_c_p = normalize_phone(p_val)
+                        if norm_c_p:
+                            c_phones.add(norm_c_p)
+                            
+                if not cluster_match and phones.intersection(c_phones):
+                    cluster_match = True
+                    break
             
             if cluster_match:
                 matched_cluster = cluster
@@ -80,7 +99,7 @@ def get_source_priority(provs: list[Provenance]) -> int:
         return 0
     return max((SOURCE_PRIORITY.get(p.source, 0) for p in provs), default=0)
 
-def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
+def resolve_field(values: list[tuple[Any, Provenance]], field_name: str, conf_config: dict | None = None) -> Any:
     """
     Resolves conflicts for a given field across multiple extractions.
     Returns FieldValue for scalar fields, and list[FieldValue] for list fields.
@@ -110,7 +129,7 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
         for k, provs in val_map.items():
             actual_val = actual_vals[k]
             fake_values_and_prov = [(actual_val, p) for p in provs]
-            combined_conf = field_confidence(fake_values_and_prov, actual_val)
+            combined_conf = field_confidence(fake_values_and_prov, actual_val, conf_config)
             results.append(FieldValue(
                 value=actual_val,
                 confidence=combined_conf,
@@ -167,7 +186,7 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
     for c in candidates:
         all_provs.extend(c["provs"])
         
-    combined_conf = field_confidence(fake_values_and_prov, winner["value"])
+    combined_conf = field_confidence(fake_values_and_prov, winner["value"], conf_config)
         
     return FieldValue(
         value=winner["value"],
@@ -176,7 +195,7 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
         conflicting_values=conflicting_values
     )
 
-def merge_candidates(extractions: list[RawExtraction]) -> list[CanonicalCandidate]:
+def merge_candidates(extractions: list[RawExtraction], conf_config: dict | None = None) -> list[CanonicalCandidate]:
     clusters = cluster_extractions(extractions)
     candidates = []
     
@@ -198,6 +217,18 @@ def merge_candidates(extractions: list[RawExtraction]) -> list[CanonicalCandidat
                         if email:
                             join_key = f"email:{email.strip().lower()}"
                             break
+                if join_key:
+                    break
+                    
+        if not join_key:
+            for ext in cluster:
+                if ext.phones:
+                    for phone, _ in ext.phones:
+                        if phone:
+                            norm_p = normalize_phone(phone)
+                            if norm_p:
+                                join_key = f"phone:{norm_p}"
+                                break
                 if join_key:
                     break
                     
@@ -229,13 +260,13 @@ def merge_candidates(extractions: list[RawExtraction]) -> list[CanonicalCandidat
             if ext.experience: experiences.extend(ext.experience)
             if ext.education: educations.extend(ext.education)
             
-        resolved_full_name = resolve_field(full_names, "full_name")
-        resolved_emails = resolve_field(emails, "emails")
-        resolved_phones = resolve_field(phones, "phones")
-        resolved_location = resolve_field(locations, "location")
-        resolved_headline = resolve_field(headlines, "headline")
-        resolved_years_experience = resolve_field(years_exp, "years_experience")
-        resolved_skills = resolve_field(skills, "skills")
+        resolved_full_name = resolve_field(full_names, "full_name", conf_config)
+        resolved_emails = resolve_field(emails, "emails", conf_config)
+        resolved_phones = resolve_field(phones, "phones", conf_config)
+        resolved_location = resolve_field(locations, "location", conf_config)
+        resolved_headline = resolve_field(headlines, "headline", conf_config)
+        resolved_years_experience = resolve_field(years_exp, "years_experience", conf_config)
+        resolved_skills = resolve_field(skills, "skills", conf_config)
         
         final_links = {"linkedin": None, "github": None, "portfolio": None, "other": []}
         links_list_sorted = []
