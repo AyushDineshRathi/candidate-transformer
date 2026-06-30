@@ -21,6 +21,7 @@ class FieldValue(Generic[T]):
     value: T
     confidence: float
     provenance: list[Provenance] = field(default_factory=list)
+    conflicting_values: list[T] = field(default_factory=list)
 
 
 @dataclass

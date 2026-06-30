@@ -1,1 +1,6 @@
-
+name,email,phone,current_company,title,github_url,location,notes
+Linus Torvalds,linus@linux.org,555-0001,Linux Foundation,Fellow,https://github.com/torvalds,"Portland, OR, USA",Creator of Linux
+Octocat,octocat@github.com,555-0002,GitHub,Mascot,https://github.com/octocat,"San Francisco, CA",Mascot of GitHub
+Mona Lisa,mona@lisa.com,,Art Institute,Model,,"Paris, France",Needs relocation
+Bad Email Guy,bademail.com,555-0003,Startup,CEO,,,Startup guy
+Empty Row,,,,,,,
