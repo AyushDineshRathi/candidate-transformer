@@ -4,7 +4,6 @@ Orchestrates the entire candidate processing flow: extract -> normalize -> merge
 """
 import json
 import logging
-from typing import Any
 
 from src.extractors.csv_extractor import extract_from_csv
 from src.extractors.github_extractor import extract_from_github

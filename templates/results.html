@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2 style="margin: 0;">Candidate Results</h2>
+    <a href="/" style="color: var(--accent); text-decoration: none; font-weight: 500;">&larr; Run New Pipeline</a>
+</div>
+
+<form class="search-bar" action="/search" method="get">
+    <input type="text" name="q" placeholder="Search candidates..." value="{{ query|default('') }}">
+    <button type="submit">Search</button>
+</form>
+
+{% if candidates %}
+<div class="candidates-grid">
+    {% for cand in candidates %}
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.25rem;">
+                    {{ cand.full_name.value if cand.full_name else 'Unknown' }}
+                    {% if cand.needs_human_review %}
+                        <span class="badge-danger">Flagged for review</span>
+                    {% endif %}
+                </h3>
+                <div style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                    {% if cand.emails %}
+                        <span style="margin-right: 1rem;">&#9993; {{ cand.emails[0].value }}</span>
+                    {% endif %}
+                    {% if cand.phones %}
+                        <span>&#9742; {{ cand.phones[0].value }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div style="text-align: right;">
+                <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Confidence</div>
+                {% set conf = cand.overall_confidence %}
+                <div style="font-size: 1.5rem;" class="
+                    {% if conf >= 0.7 %}conf-high
+                    {% elif conf >= 0.4 %}conf-med
+                    {% else %}conf-low{% endif %}
+                ">
+                    {{ "%.2f"|format(conf) }}
+                </div>
+            </div>
+        </div>
+
+        {% if cand.skills %}
+        <div style="margin-top: 1rem;">
+            {% for skill in cand.skills %}
+                <span class="pill">{{ skill.value }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <details>
+            <summary>Show provenance</summary>
+            <pre>{{ explain_candidate(cand) }}</pre>
+        </details>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 4rem;">
+    <h3 style="color: var(--text-muted);">No candidates found.</h3>
+</div>
+{% endif %}
+{% endblock %}

@@ -45,7 +45,10 @@ class CanonicalCandidate:
         """
         Serializes the CanonicalCandidate to a plain JSON-able dict.
         """
-        return asdict(self)
+        d = asdict(self)
+        from src.explain import explain_to_review_flag
+        d['needs_human_review'] = explain_to_review_flag(d)
+        return d
 
 
 @dataclass

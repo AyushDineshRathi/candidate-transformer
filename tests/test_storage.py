@@ -4,7 +4,7 @@ Tests for SQLite storage layer.
 import sqlite3
 import pytest
 from src.models import CanonicalCandidate, FieldValue
-from src.storage import init_db, upsert_candidate, get_candidate, list_candidates, search_by_skill
+from src.storage import init_db, upsert_candidate, get_candidate, list_candidates, search_by_skill, full_text_search
 
 @pytest.fixture
 def db_path(tmp_path):
@@ -112,3 +112,40 @@ def test_list_candidates_filtered(db_path):
     high_conf = list_candidates(db_path, min_confidence=0.8)
     assert len(high_conf) == 1
     assert high_conf[0]["candidate_id"] == "test-1"
+
+def test_full_text_search(db_path):
+    init_db(db_path)
+    
+    cand1 = CanonicalCandidate(
+        candidate_id="test-1",
+        full_name=FieldValue("Alice Hacker", 1.0),
+        headline=FieldValue("Senior Kernel Engineer", 1.0),
+        experience=[{"company": "Linux Foundation", "title": "Maintainer"}],
+        skills=[FieldValue("C", 1.0)]
+    )
+    cand2 = CanonicalCandidate(
+        candidate_id="test-2",
+        full_name=FieldValue("Bob Frontend", 1.0),
+        headline=FieldValue("React Developer", 1.0),
+        skills=[FieldValue("JavaScript", 1.0)]
+    )
+    
+    upsert_candidate(db_path, cand1)
+    upsert_candidate(db_path, cand2)
+    
+    # Matching query
+    results = full_text_search(db_path, "kernel")
+    assert len(results) == 1
+    assert results[0]["full_name"]["value"] == "Alice Hacker"
+    
+    # Matches multiple fields across name and experience
+    results2 = full_text_search(db_path, "alice linux")
+    assert len(results2) == 1
+    
+    # Doesn't match
+    results3 = full_text_search(db_path, "missingword")
+    assert len(results3) == 0
+    
+    # Syntax error in FTS5 query should not crash but return empty
+    results4 = full_text_search(db_path, "linux OR OR")
+    assert len(results4) == 0

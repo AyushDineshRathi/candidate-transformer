@@ -40,6 +40,13 @@ def init_db(db_path: str) -> None:
             ON candidate_skills(candidate_id, skill_name)
         ''')
         
+        cursor.execute('''
+            CREATE VIRTUAL TABLE IF NOT EXISTS candidates_fts USING fts5(
+                candidate_id UNINDEXED,
+                searchable_text
+            )
+        ''')
+        
         conn.commit()
 
 def upsert_candidate(db_path: str, candidate: CanonicalCandidate) -> None:
@@ -72,6 +79,32 @@ def upsert_candidate(db_path: str, candidate: CanonicalCandidate) -> None:
                 INSERT INTO candidate_skills (candidate_id, skill_name, confidence)
                 VALUES (?, ?, ?)
             ''', (candidate.candidate_id, skill_name, confidence))
+            
+        # Build searchable text
+        search_parts = []
+        if full_name:
+            search_parts.append(full_name)
+        if candidate.headline and candidate.headline.value:
+            search_parts.append(candidate.headline.value)
+        for skill_fv in candidate.skills:
+            if skill_fv.value:
+                search_parts.append(skill_fv.value)
+        for exp in candidate.experience:
+            if exp.get("company"):
+                search_parts.append(str(exp["company"]))
+            if exp.get("title"):
+                search_parts.append(str(exp["title"]))
+                
+        searchable_text = " ".join(search_parts)
+        
+        cursor.execute('''
+            DELETE FROM candidates_fts WHERE candidate_id = ?
+        ''', (candidate.candidate_id,))
+        
+        cursor.execute('''
+            INSERT INTO candidates_fts (candidate_id, searchable_text)
+            VALUES (?, ?)
+        ''', (candidate.candidate_id, searchable_text))
             
         conn.commit()
 
@@ -118,5 +151,28 @@ def search_by_skill(db_path: str, skill_name: str) -> list[dict]:
             WHERE LOWER(s.skill_name) = ?
         ''', (skill_name.lower(),))
         
+        rows = cursor.fetchall()
+        return [json.loads(row[0]) for row in rows]
+
+def full_text_search(db_path: str, query: str) -> list[dict]:
+    """
+    Searches candidates using FTS5 virtual table.
+    Returns matching candidates ranked by bm25 relevance.
+    """
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute('''
+                SELECT c.canonical_json 
+                FROM candidates_fts f
+                JOIN candidates c ON f.candidate_id = c.candidate_id
+                WHERE candidates_fts MATCH ?
+                ORDER BY bm25(candidates_fts)
+            ''', (query,))
+        except sqlite3.OperationalError:
+            # E.g. syntax error in FTS5 query string
+            return []
+            
         rows = cursor.fetchall()
         return [json.loads(row[0]) for row in rows]

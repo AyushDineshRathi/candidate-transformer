@@ -30,11 +30,24 @@ python cli.py --csv sample_data/recruiter_export.csv --config config/sample_proj
 
 *Note: The generated examples are saved in `output_default.json` and `output_custom.json`.*
 
-## Pipeline Stages
+```bash
+python cli.py explain --db candidates.sqlite3 --all --flagged-only
+```
 
-- **Extraction**: Parses standard fields sequentially out of the CSV and triggers supplemental API fetches targeting the `github_url` keys while gracefully handling networking errors.
-- **Normalization**: A central purification pass converting names to Title Case, stripping email whitespace, standardizing country identifiers, and E.164-formatting raw telephone entries to avoid pollution downstream.
-- **Merge (Entity Resolution)**: Aggregates disjointed source objects, structurally deduplicates matches via strict deterministic Join Keys (GitHub URL -> Primary Email), and records granular confidence scores representing field-level agreements.
+## Web UI Demo Tool
+
+A minimal local Web UI is included for demonstration purposes. **Note:** This is a local demo tool built with Flask's development server, not a production WSGI service. It is designed specifically to visualize the pipeline's capabilities in a 2-minute demo format.
+
+To launch the web interface locally on `localhost:5000`:
+```bash
+python cli.py serve
+```
+
+## Architecture
+
+- **Extraction**: Clean functional interfaces per data source. Each returns raw tuples with Confidence and Provenance metadata attached immediately at birth.
+- **Normalization**: Pure functions mapping ugly strings to consistent canonical structures.
+- **Merge**: Smart conflict resolution utilizing provenance-based confidence decaying and source prioritization, structurally deduplicates matches via strict deterministic Join Keys (GitHub URL -> Primary Email), and records granular confidence scores representing field-level agreements.
 - **Projection**: Resolves dot-notation JSON paths and array-maps to cleanly transform the heavy canonical object schema directly into flexible payload mappings per customer configurations.
 - **Validation**: Absorbs the payloads natively asserting conformity against the JSON schema definitions while explicitly preventing ungraceful pipeline death on corrupt values.
 
