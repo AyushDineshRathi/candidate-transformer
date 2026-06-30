@@ -26,13 +26,13 @@ def get_informativeness(value: str, counts: Counter, stoplist: set) -> float:
         return 1.0
     return max(0.05, 1.0 / count)
 
-def find_possible_duplicates(candidates: list[CanonicalCandidate]) -> list[dict]:
+def find_possible_duplicates(candidates: list[CanonicalCandidate], threshold: float = 0.6) -> list[dict]:
     """
     Computes a bounded similarity score using simple, explainable signals to find
     candidates that might be duplicates but didn't have exact email/phone/github matches.
     Threshold is conservatively high (0.6) to prioritize precision over recall and avoid false positives.
     """
-    SUGGESTION_THRESHOLD = 0.6
+    SUGGESTION_THRESHOLD = threshold
     suggestions = []
     
     # 1. Compute frequency counts across the entire current candidate pool

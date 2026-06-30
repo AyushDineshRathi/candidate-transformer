@@ -61,7 +61,7 @@ def format_conflicts(conflicts: list) -> str:
         
     return "(penalized: " + "; ".join(conflict_strs) + ")"
 
-def explain_candidate(candidate_dict: dict) -> str:
+def explain_candidate(candidate_dict: dict, all_candidates: list[dict] = None) -> str:
     """
     Generates a human-readable explanation of how a candidate's fields were decided.
     """
@@ -171,4 +171,21 @@ def explain_candidate(candidate_dict: dict) -> str:
     else:
         lines.append(f"! overall_confidence {overall_conf:.2f} - no flags")
         
+    if all_candidates:
+        from src.duplicate_suggestions import find_possible_duplicates
+        from src.models import CanonicalCandidate
+        
+        cands = [CanonicalCandidate.from_dict(c) for c in all_candidates]
+        suggestions = find_possible_duplicates(cands, threshold=0.4)
+        
+        my_id = candidate_dict.get("candidate_id")
+        for s in suggestions:
+            if s["candidate_a_id"] == my_id or s["candidate_b_id"] == my_id:
+                other_name = s["candidate_b_name"] if s["candidate_a_id"] == my_id else s["candidate_a_name"]
+                score = s["similarity_score"]
+                if score >= 0.6:
+                    lines.append(f"  ! Possible duplicate of \"{other_name}\" (score {score:.2f} — flagged for review)")
+                else:
+                    lines.append(f"  ! Possible duplicate of \"{other_name}\" (score {score:.2f}, below review threshold after informativeness discount — see /suggest-duplicates for full breakdown)")
+                    
     return "\n".join(lines)

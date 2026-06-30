@@ -81,6 +81,7 @@ def main():
         from src.storage import get_candidate, list_candidates
         from src.explain import explain_candidate
         
+        all_cands = list_candidates(args.db)
         candidates_to_explain = []
         if args.candidate_id:
             cand = get_candidate(args.db, args.candidate_id)
@@ -90,14 +91,14 @@ def main():
                 print(f"Candidate {args.candidate_id} not found.")
                 return
         elif args.all:
-            candidates_to_explain = list_candidates(args.db)
+            candidates_to_explain = all_cands
             if args.flagged_only:
                 candidates_to_explain = [c for c in candidates_to_explain if c.get("needs_human_review")]
                 
         for i, c in enumerate(candidates_to_explain):
             if i > 0:
                 print("\n" + "="*50 + "\n")
-            print(explain_candidate(c))
+            print(explain_candidate(c, all_cands))
         return
         
     if args.command == "serve":

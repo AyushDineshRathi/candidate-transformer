@@ -4,7 +4,7 @@ Responsible for extracting candidate information from ATS JSON exports.
 """
 import json
 import logging
-import uuid
+import hashlib
 from typing import Any
 from src.models import RawExtraction, Provenance
 
@@ -36,7 +36,8 @@ def extract_from_ats_json(path: str, conf_config: dict | None = None, canonicali
                 
             candidate_id = record.get("ats_record_id")
             if not candidate_id:
-                candidate_id = uuid.uuid4().hex
+                record_str = json.dumps(record, sort_keys=True)
+                candidate_id = hashlib.md5(record_str.encode('utf-8')).hexdigest()
                 
             extraction = RawExtraction(candidate_id=candidate_id)
             

@@ -3,8 +3,9 @@ CSV extractor module.
 Responsible for extracting candidate information from CSV exports.
 """
 import csv
+import json
 import logging
-import uuid
+import hashlib
 from typing import Any
 from src.models import RawExtraction, Provenance
 
@@ -30,7 +31,8 @@ def extract_from_csv(path: str, conf_config: dict | None = None) -> list[RawExtr
                     logger.warning("Skipping fully empty row in %s", path)
                     continue
                 
-                candidate_id = uuid.uuid4().hex
+                row_str = json.dumps(row, sort_keys=True)
+                candidate_id = hashlib.md5(row_str.encode('utf-8')).hexdigest()
                 extraction = RawExtraction(candidate_id=candidate_id)
                 
                 # 5. Extra unknown columns are silently ignored by only requesting known keys.

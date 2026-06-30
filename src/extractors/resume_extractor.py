@@ -50,7 +50,12 @@ def extract_from_resume(path: str, conf_config: dict | None = None, canonicalize
         return RawExtraction(candidate_id=cand_id)
 
     ext_type = os.path.splitext(path)[1].lower().strip(".")
-    source_name = "resume_" + ext_type
+    base_name = os.path.splitext(os.path.basename(path))[0]
+    
+    # Strip the word 'resume' (case-insensitive) to avoid redundant provenance names
+    base_name_clean = re.sub(r'(?i)resume', '', base_name)
+    merged_name = re.sub(r'[^a-zA-Z0-9]', '', base_name_clean).lower()
+    source_name = f"{merged_name}_resume_{ext_type}"
     
     if conf_config is None:
         conf_config = {}
