@@ -1,0 +1,168 @@
+{
+  "candidates": [
+    {
+      "full_name": "Octocat",
+      "full_name_confidence": 0.9,
+      "primary_email": "octocat@github.com",
+      "primary_email_confidence": 1.0,
+      "phone": null,
+      "phone_confidence": null,
+      "skills": [
+        "Ruby",
+        "CSS",
+        "HTML"
+      ],
+      "skills_confidence": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "full_name": "Mona Lisa",
+      "full_name_confidence": 1.0,
+      "primary_email": "mona@lisa.com",
+      "primary_email_confidence": 1.0,
+      "phone": null,
+      "phone_confidence": null,
+      "skills": null,
+      "skills_confidence": null
+    },
+    {
+      "full_name": "Bad Email Guy",
+      "full_name_confidence": 1.0,
+      "primary_email": "bademail.com",
+      "primary_email_confidence": 0.4,
+      "phone": null,
+      "phone_confidence": null,
+      "skills": null,
+      "skills_confidence": null
+    },
+    {
+      "full_name": "Empty Row",
+      "full_name_confidence": 1.0,
+      "primary_email": null,
+      "primary_email_confidence": null,
+      "phone": null,
+      "phone_confidence": null,
+      "skills": null,
+      "skills_confidence": null
+    },
+    {
+      "full_name": "Abhijeet Waghmare",
+      "full_name_confidence": 0.9,
+      "primary_email": "abhijeetw035@gmail.com",
+      "primary_email_confidence": 1.0,
+      "phone": "+919135631646",
+      "phone_confidence": 1.0,
+      "skills": [
+        "TypeScript",
+        "JavaScript",
+        "Java",
+        "Python",
+        "Ejs",
+        "Vue",
+        "CSS",
+        "Jupyter Notebook",
+        "Go",
+        "C"
+      ],
+      "skills_confidence": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.475,
+        0.5,
+        0.475
+      ]
+    },
+    {
+      "full_name": "Linus Torvalds",
+      "full_name_confidence": 1.0,
+      "primary_email": "linus@linux.org",
+      "primary_email_confidence": 1.0,
+      "phone": "+15035550142",
+      "phone_confidence": 0.95,
+      "skills": [
+        "C",
+        "Openscad",
+        "C++",
+        "Kernel",
+        "C-Programming",
+        "Open-Source"
+      ],
+      "skills_confidence": [
+        0.5,
+        0.5,
+        0.5,
+        0.95,
+        0.95,
+        0.95
+      ]
+    },
+    {
+      "full_name": "Ada Lovelace",
+      "full_name_confidence": 0.95,
+      "primary_email": "ada@lovelace.com",
+      "primary_email_confidence": 0.95,
+      "phone": null,
+      "phone_confidence": null,
+      "skills": [
+        "Analytical-Engine",
+        "Mathematics"
+      ],
+      "skills_confidence": [
+        0.95,
+        0.95
+      ]
+    },
+    {
+      "full_name": null,
+      "full_name_confidence": null,
+      "primary_email": null,
+      "primary_email_confidence": null,
+      "phone": null,
+      "phone_confidence": null,
+      "skills": [
+        "Invisible"
+      ],
+      "skills_confidence": [
+        0.95
+      ]
+    },
+    {
+      "full_name": "Ayush Rathi",
+      "full_name_confidence": 1.0,
+      "primary_email": "ayushrathi955@gmail.com",
+      "primary_email_confidence": 1.0,
+      "phone": "+917249381902",
+      "phone_confidence": 1.0,
+      "skills": [
+        "Python",
+        "Jupyter Notebook",
+        "JavaScript",
+        "TypeScript",
+        "C++",
+        "Resume_Skills_Test"
+      ],
+      "skills_confidence": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.95
+      ]
+    }
+  ],
+  "possible_duplicates": [],
+  "run_metadata": {
+    "processed": 9,
+    "merged": 9,
+    "warnings": 0
+  }
+}

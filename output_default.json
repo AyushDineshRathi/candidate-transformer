@@ -1,0 +1,1115 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "5fbfdd03-fd5a-547c-9dab-72abd68178df",
+      "full_name": {
+        "value": "Octocat",
+        "confidence": 0.9,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "github_api",
+            "source_field": "name",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          }
+        ],
+        "conflicting_values": [
+          {
+            "value": "The Octocat",
+            "source": "github_api",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "emails": [
+        {
+          "value": "octocat@github.com",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "email",
+              "method": "csv_row",
+              "confidence": 1.0
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [],
+      "location": {
+        "value": {
+          "city": "San Francisco",
+          "region": null,
+          "country": "CA"
+        },
+        "confidence": 0.9,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "location",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "github_api",
+            "source_field": "location",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          }
+        ],
+        "conflicting_values": [
+          {
+            "value": {
+              "city": "San Francisco",
+              "region": null,
+              "country": null
+            },
+            "source": "github_api",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "links": {
+        "linkedin": null,
+        "github": "https://github.com/octocat",
+        "portfolio": "https://github.blog",
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [
+        {
+          "value": "Ruby",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "CSS",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "HTML",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "experience": [
+        {
+          "company": "GitHub",
+          "title": "Mascot",
+          "start": null,
+          "end": null,
+          "summary": null
+        },
+        {
+          "company": "@github",
+          "title": null,
+          "start": null,
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.6,
+      "needs_human_review": false
+    },
+    {
+      "candidate_id": "5de0bbce-be3f-550d-8384-ca434e989ac4",
+      "full_name": {
+        "value": "Mona Lisa",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      },
+      "emails": [
+        {
+          "value": "mona@lisa.com",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "email",
+              "method": "csv_row",
+              "confidence": 1.0
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [],
+      "location": {
+        "value": {
+          "city": "Paris",
+          "region": null,
+          "country": "FR"
+        },
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "location",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      },
+      "links": {
+        "linkedin": null,
+        "github": null,
+        "portfolio": null,
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [],
+      "experience": [
+        {
+          "company": "Art Institute",
+          "title": "Model",
+          "start": null,
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.5,
+      "needs_human_review": false
+    },
+    {
+      "candidate_id": "2c121b49-7ce8-5df3-9782-7e9ad10a6f32",
+      "full_name": {
+        "value": "Bad Email Guy",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      },
+      "emails": [
+        {
+          "value": "bademail.com",
+          "confidence": 0.4,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "email",
+              "method": "csv_row",
+              "confidence": 0.4
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [],
+      "location": null,
+      "links": {
+        "linkedin": null,
+        "github": null,
+        "portfolio": null,
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [],
+      "experience": [
+        {
+          "company": "Startup",
+          "title": "CEO",
+          "start": null,
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.35,
+      "needs_human_review": true
+    },
+    {
+      "candidate_id": "56bbd879-a7bc-53d0-91f8-e0775a52bf17",
+      "full_name": {
+        "value": "Empty Row",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      },
+      "emails": [],
+      "phones": [],
+      "location": null,
+      "links": {
+        "linkedin": null,
+        "github": null,
+        "portfolio": null,
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [],
+      "experience": [],
+      "education": [],
+      "overall_confidence": 0.25,
+      "needs_human_review": true
+    },
+    {
+      "candidate_id": "2beda625-938a-5869-ba33-a9dcf07414b5",
+      "full_name": {
+        "value": "Abhijeet Waghmare",
+        "confidence": 0.9,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "github_api",
+            "source_field": "name",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          }
+        ],
+        "conflicting_values": [
+          {
+            "value": "Abhijeet",
+            "source": "github_api",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "emails": [
+        {
+          "value": "abhijeetw035@gmail.com",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "email",
+              "method": "csv_row",
+              "confidence": 1.0
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [
+        {
+          "value": "+919135631646",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "phone",
+              "method": "csv_row",
+              "confidence": 1.0
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "location": {
+        "value": {
+          "city": "Pune",
+          "region": null,
+          "country": "IN"
+        },
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "location",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      },
+      "links": {
+        "linkedin": null,
+        "github": "https://github.com/abhijeetw035",
+        "portfolio": null,
+        "other": []
+      },
+      "headline": {
+        "value": "C4GT'25 @PSMRI | SIH'25 Finalist | Open Source Developer | WebDev and DevOps Enthusiast | solving problems through code...",
+        "confidence": 0.7,
+        "provenance": [
+          {
+            "source": "github_api",
+            "source_field": "bio",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          }
+        ],
+        "conflicting_values": []
+      },
+      "years_experience": null,
+      "skills": [
+        {
+          "value": "TypeScript",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "JavaScript",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Java",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Python",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Ejs",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Vue",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "CSS",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Jupyter Notebook",
+          "confidence": 0.475,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.475
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Go",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "C",
+          "confidence": 0.475,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.475
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "experience": [
+        {
+          "company": "Student",
+          "title": "Student",
+          "start": null,
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.849,
+      "needs_human_review": false
+    },
+    {
+      "candidate_id": "25a107d2-8f91-50a3-ad81-d11775cff5b3",
+      "full_name": {
+        "value": "Linus Torvalds",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "github_api",
+            "source_field": "name",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          },
+          {
+            "source": "ats.json",
+            "source_field": "personal.displayName",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      "emails": [
+        {
+          "value": "linus@linux.org",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "email",
+              "method": "csv_row",
+              "confidence": 1.0
+            },
+            {
+              "source": "ats.json",
+              "source_field": "personal.contact.primaryEmail",
+              "method": "ats_json_parser",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [
+        {
+          "value": "+15035550142",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "personal.contact.mobile",
+              "method": "ats_json_parser",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "location": {
+        "value": {
+          "city": "Portland",
+          "region": null,
+          "country": "US"
+        },
+        "confidence": 0.9,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "location",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "github_api",
+            "source_field": "location",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          },
+          {
+            "source": "ats.json",
+            "source_field": "geo",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": [
+          {
+            "value": {
+              "city": "Portland",
+              "region": "Oregon",
+              "country": "US"
+            },
+            "source": "ats.json",
+            "confidence": 0.95
+          }
+        ]
+      },
+      "links": {
+        "linkedin": null,
+        "github": "https://github.com/torvalds",
+        "portfolio": null,
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [
+        {
+          "value": "C",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Openscad",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "C++",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Kernel",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "C-Programming",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Open-Source",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "experience": [
+        {
+          "company": "Linux Foundation",
+          "title": "Fellow",
+          "start": null,
+          "end": null,
+          "summary": null
+        },
+        {
+          "company": "Linux Foundation",
+          "title": null,
+          "start": null,
+          "end": null,
+          "summary": null
+        },
+        {
+          "company": "Linux Foundation",
+          "title": "Fellow",
+          "start": "2007-01-01",
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.919,
+      "needs_human_review": false
+    },
+    {
+      "candidate_id": "f2dcd81a-2248-561b-8ccf-dd293b15d24a",
+      "full_name": {
+        "value": "Ada Lovelace",
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "personal.displayName",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      "emails": [
+        {
+          "value": "ada@lovelace.com",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "personal.contact.primaryEmail",
+              "method": "ats_json_parser",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [],
+      "location": {
+        "value": {
+          "city": "London",
+          "region": null,
+          "country": "GB"
+        },
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "geo",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      "links": {
+        "linkedin": null,
+        "github": null,
+        "portfolio": null,
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [
+        {
+          "value": "Analytical-Engine",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Mathematics",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "experience": [
+        {
+          "company": "Babbage Engine",
+          "title": "First Programmer",
+          "start": "1843-01-01",
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.712,
+      "needs_human_review": false
+    },
+    {
+      "candidate_id": "145f8f76-6084-5f49-9d05-1985e6f1dcb3",
+      "full_name": null,
+      "emails": [],
+      "phones": [],
+      "location": {
+        "value": {
+          "city": "Unknown",
+          "region": null,
+          "country": null
+        },
+        "confidence": 0.95,
+        "provenance": [
+          {
+            "source": "ats.json",
+            "source_field": "geo",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      "links": {
+        "linkedin": null,
+        "github": null,
+        "portfolio": null,
+        "other": []
+      },
+      "headline": null,
+      "years_experience": null,
+      "skills": [
+        {
+          "value": "Invisible",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "experience": [
+        {
+          "company": "Mystery Corp",
+          "title": "Ghost",
+          "start": "2020-01-01",
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.237,
+      "needs_human_review": true
+    },
+    {
+      "candidate_id": "05baa933-168d-5b8f-83ac-05747cdf746e",
+      "full_name": {
+        "value": "Ayush Rathi",
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "name",
+            "method": "csv_row",
+            "confidence": 1.0
+          },
+          {
+            "source": "github_api",
+            "source_field": "name",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          },
+          {
+            "source": "ats.json",
+            "source_field": "personal.displayName",
+            "method": "ats_json_parser",
+            "confidence": 0.95
+          }
+        ],
+        "conflicting_values": []
+      },
+      "emails": [
+        {
+          "value": "ayushrathi955@gmail.com",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "email",
+              "method": "csv_row",
+              "confidence": 1.0
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "phones": [
+        {
+          "value": "+917249381902",
+          "confidence": 1.0,
+          "provenance": [
+            {
+              "source": "recruiter.csv",
+              "source_field": "phone",
+              "method": "csv_row",
+              "confidence": 1.0
+            },
+            {
+              "source": "ats.json",
+              "source_field": "personal.contact.mobile",
+              "method": "ats_json_parser",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "location": {
+        "value": {
+          "city": "Pune",
+          "region": null,
+          "country": "IN"
+        },
+        "confidence": 1.0,
+        "provenance": [
+          {
+            "source": "recruiter.csv",
+            "source_field": "location",
+            "method": "csv_row",
+            "confidence": 1.0
+          }
+        ],
+        "conflicting_values": []
+      },
+      "links": {
+        "linkedin": null,
+        "github": "https://github.com/AyushDineshRathi",
+        "portfolio": null,
+        "other": []
+      },
+      "headline": {
+        "value": "3rd Year CSE Student",
+        "confidence": 0.7,
+        "provenance": [
+          {
+            "source": "github_api",
+            "source_field": "bio",
+            "method": "github_rest_api",
+            "confidence": 0.7
+          }
+        ],
+        "conflicting_values": []
+      },
+      "years_experience": null,
+      "skills": [
+        {
+          "value": "Python",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Jupyter Notebook",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "JavaScript",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "TypeScript",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "C++",
+          "confidence": 0.5,
+          "provenance": [
+            {
+              "source": "github_api",
+              "source_field": "repos[].language",
+              "method": "github_rest_api",
+              "confidence": 0.5
+            }
+          ],
+          "conflicting_values": []
+        },
+        {
+          "value": "Resume_Skills_Test",
+          "confidence": 0.95,
+          "provenance": [
+            {
+              "source": "ats.json",
+              "source_field": "tags",
+              "method": "ats_json_parser (title_case_fallback)",
+              "confidence": 0.95
+            }
+          ],
+          "conflicting_values": []
+        }
+      ],
+      "experience": [
+        {
+          "company": "Student",
+          "title": "Student",
+          "start": null,
+          "end": null,
+          "summary": null
+        }
+      ],
+      "education": [],
+      "overall_confidence": 0.894,
+      "needs_human_review": false
+    }
+  ],
+  "possible_duplicates": [],
+  "run_metadata": {
+    "processed": 9,
+    "merged": 9,
+    "warnings": 0
+  }
+}

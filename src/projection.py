@@ -139,4 +139,59 @@ def project(candidate: CanonicalCandidate, config: dict) -> dict:
     return output
 
 def project_default(candidate: CanonicalCandidate) -> dict:
-    return candidate.to_dict()
+    out = {}
+    out["candidate_id"] = candidate.candidate_id
+    out["full_name"] = candidate.full_name.value if candidate.full_name else None
+    out["emails"] = [e.value for e in candidate.emails]
+    out["phones"] = [p.value for p in candidate.phones]
+    
+    if candidate.location and candidate.location.value:
+        loc = candidate.location.value
+        out["location"] = {
+            "city": loc.get("city"),
+            "region": loc.get("region"),
+            "country": loc.get("country")
+        }
+    else:
+        out["location"] = None
+        
+    out["links"] = candidate.links
+    out["headline"] = candidate.headline.value if candidate.headline else None
+    out["years_experience"] = candidate.years_experience.value if candidate.years_experience else None
+    
+    out["skills"] = []
+    for s in candidate.skills:
+        sources = [p.source for p in s.provenance]
+        out["skills"].append({
+            "name": s.value,
+            "confidence": s.confidence,
+            "sources": sources
+        })
+        
+    out["experience"] = candidate.experience
+    out["education"] = candidate.education
+    
+    prov_list = []
+    def extract_prov(field_name, field_val_or_list):
+        if not field_val_or_list:
+            return
+        if isinstance(field_val_or_list, list):
+            for item in field_val_or_list:
+                if hasattr(item, 'provenance'):
+                    for p in item.provenance:
+                        prov_list.append({"field": field_name, "source": p.source, "method": p.method})
+        else:
+            if hasattr(field_val_or_list, 'provenance'):
+                for p in field_val_or_list.provenance:
+                    prov_list.append({"field": field_name, "source": p.source, "method": p.method})
+
+    extract_prov("full_name", candidate.full_name)
+    extract_prov("emails", candidate.emails)
+    extract_prov("phones", candidate.phones)
+    extract_prov("location", candidate.location)
+    extract_prov("headline", candidate.headline)
+    extract_prov("years_experience", candidate.years_experience)
+    
+    out["provenance"] = prov_list
+    out["overall_confidence"] = candidate.overall_confidence
+    return out

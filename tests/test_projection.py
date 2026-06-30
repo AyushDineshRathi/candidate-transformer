@@ -18,7 +18,7 @@ def test_project_default():
     c = get_candidate()
     out = project_default(c)
     assert out["candidate_id"] == "c-1"
-    assert out["full_name"]["value"] == "Alice"
+    assert out["full_name"] == "Alice"
 
 def test_project_config_subset():
     c = get_candidate()
