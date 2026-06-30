@@ -8,26 +8,36 @@ from typing import Any
 
 from src.extractors.csv_extractor import extract_from_csv
 from src.extractors.github_extractor import extract_from_github
+from src.extractors.ats_extractor import extract_from_ats_json
 from src import normalizers
 from src.merge import merge_candidates
 from src.projection import project, project_default
 from src.validation import validate_pipeline_output
+from src.storage import init_db, upsert_candidate
 
 logger = logging.getLogger(__name__)
 
-def run_pipeline(csv_path: str, projection_config_path: str | None = None) -> dict:
+def run_pipeline(csv_path: str, projection_config_path: str | None = None, ats_path: str | None = None, db_path: str | None = None) -> dict:
     """
     Runs the full extraction, normalization, merge, projection, and validation pipeline.
     Normalization is performed here to keep extractors focused strictly on parsing.
     Returns a dict containing validation_results and stats.
     """
+    if db_path:
+        logger.info("Initializing database: %s", db_path)
+        init_db(db_path)
+        
     logger.info("Stage 1: Extract")
     csv_extractions = extract_from_csv(csv_path)
     all_extractions = []
     all_extractions.extend(csv_extractions)
     
+    if ats_path:
+        ats_extractions = extract_from_ats_json(ats_path)
+        all_extractions.extend(ats_extractions)
+    
     seen_githubs = set()
-    for ext in csv_extractions:
+    for ext in list(all_extractions):
         if ext.links and ext.links[0]:
             github_url = ext.links[0].get("github")
             if github_url:
@@ -107,6 +117,9 @@ def run_pipeline(csv_path: str, projection_config_path: str | None = None) -> di
     warnings = 0
     
     for cand in candidates:
+        if db_path:
+            upsert_candidate(db_path, cand)
+            
         if config:
             proj_out = project(cand, config)
         else:

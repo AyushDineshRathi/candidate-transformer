@@ -46,3 +46,18 @@ def test_overall_confidence_missing_core():
     # core fields: full_name (0.8), emails (0.0), phones (0.0), skills (0.0)
     # average = 0.8 / 4 = 0.2
     assert overall_confidence(cand) == 0.2
+
+def test_overall_confidence_does_not_silently_floor_to_zero():
+    cand = CanonicalCandidate(
+        candidate_id="124",
+        full_name=FieldValue(value="Bob", confidence=1.0, provenance=[]),
+        emails=[FieldValue(value="bob@example.com", confidence=1.0, provenance=[])],
+        phones=[],
+        skills=[FieldValue(value="Python", confidence=0.5, provenance=[])]
+    )
+    
+    # core fields: full_name (1.0), emails (1.0), phones (0.0), skills (0.5)
+    # average = 2.5 / 4 = 0.625
+    res = overall_confidence(cand)
+    assert res > 0.5
+    assert res == 0.625

@@ -1,0 +1,30 @@
+{
+  "candidates": [
+    {
+      "ats_record_id": "ATS-1001",
+      "personal": {
+        "displayName": "Linus Torvalds",
+        "contact": {"primaryEmail": "linus@linux.org", "mobile": "+1-503-555-0142"}
+      },
+      "employment": {"employer": "Linux Foundation", "jobTitle": "Fellow", "startDate": "2007-01-01"},
+      "tags": ["kernel", "c-programming", "open-source"],
+      "geo": "Portland, Oregon, United States"
+    },
+    {
+      "ats_record_id": "ATS-1002",
+      "personal": {
+        "displayName": "Ada Lovelace",
+        "contact": {"primaryEmail": "ada@lovelace.com", "mobile": "000-000-0000"}
+      },
+      "employment": {"employer": "Babbage Engine", "jobTitle": "First Programmer", "startDate": "1843-01-01"},
+      "tags": ["analytical-engine", "mathematics"],
+      "geo": "London, UK"
+    },
+    {
+      "ats_record_id": "ATS-1003",
+      "employment": {"employer": "Mystery Corp", "jobTitle": "Ghost", "startDate": "2020-01-01"},
+      "tags": ["invisible"],
+      "geo": "Unknown"
+    }
+  ]
+}

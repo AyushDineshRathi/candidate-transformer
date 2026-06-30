@@ -34,6 +34,8 @@ dist/
 Thumbs.db
 
 # Project specific generated files
+out*.json
 output.json
 output_default.json
 output_custom.json
+*.sqlite3

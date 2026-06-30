@@ -92,7 +92,10 @@ def test_pipeline_entity_resolution_conflict(mock_get, temp_csv):
     
     # Verify conflict preservation - 'conflicting_values' will be in the output since to_dict extracts it
     assert "conflicting_values" in out["full_name"]
-    assert out["full_name"]["conflicting_values"] == ["Alice S."]
+    conflict = out["full_name"]["conflicting_values"][0]
+    assert conflict["value"] == "Alice S."
+    assert conflict["source"] == "recruiter.csv"
+    assert conflict["confidence"] == 1.0
 
 def test_pipeline_default_vs_custom_config(temp_csv, tmp_path):
     """Run with default config vs custom config on the SAME input -> assert outputs differ exactly as configured."""
@@ -127,3 +130,64 @@ def test_pipeline_default_vs_custom_config(temp_csv, tmp_path):
     assert "full_name" not in out_cust
     assert out_cust["given_name"] == "Bob"
     assert out_cust["contact_email"] == "bob@example.com"
+
+@patch("src.extractors.github_extractor.requests.get")
+def test_pipeline_3way_merge_csv_ats_github(mock_get, temp_csv, tmp_path):
+    """Test merging data across CSV, ATS JSON, and GitHub API for a single candidate."""
+    # 1. CSV data
+    csv_content = (
+        "name,email,github_url,location\n"
+        "Linus Torvalds CSV,linus@linux.org,https://github.com/torvalds,US\n"
+    )
+    csv_path = temp_csv(csv_content)
+    
+    # 2. ATS data
+    ats_content = {
+        "candidates": [
+            {
+                "ats_record_id": "ATS-1001",
+                "personal": {
+                    "displayName": "Linus Torvalds ATS",
+                    "contact": {"primaryEmail": "linus@linux.org"}
+                },
+                "geo": "Portland, Oregon"
+            }
+        ]
+    }
+    ats_path = tmp_path / "ats.json"
+    ats_path.write_text(json.dumps(ats_content), encoding="utf-8")
+    
+    # 3. GitHub API mock
+    mock_profile_resp = MagicMock()
+    mock_profile_resp.status_code = 200
+    mock_profile_resp.json.return_value = {
+        "name": "Linus Torvalds GH",
+        "location": "Portland, OR",
+        "email": "linus@linux.org",
+        "html_url": "https://github.com/torvalds"
+    }
+    mock_repos_resp = MagicMock()
+    mock_repos_resp.status_code = 200
+    mock_repos_resp.json.return_value = []
+    mock_get.side_effect = [mock_profile_resp, mock_repos_resp]
+    
+    # Run
+    results = run_pipeline(csv_path, ats_path=str(ats_path))
+    
+    candidates = results["candidates"]
+    stats = results["stats"]
+    
+    # Should result in exactly 1 merged candidate
+    assert len(candidates) == 1
+    assert stats["merged"] == 1
+    
+    out = candidates[0]["output"]
+    
+    # Verify provenance across all 3 sources
+    name_provs = out["full_name"]["provenance"]
+    assert len(name_provs) == 3
+    sources = {p["source"] for p in name_provs}
+    assert sources == {"recruiter.csv", "ats.json", "github_api"}
+    
+    # Check winning value is from CSV (priority 2 vs 1.5 vs 1)
+    assert out["full_name"]["value"] == "Linus Torvalds CSV"

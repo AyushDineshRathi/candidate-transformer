@@ -17,7 +17,10 @@ def test_merge_same_person_github():
     
     assert len(candidates) == 1
     assert candidates[0].full_name.value == "Linus Torvalds CSV"
-    assert "Linus Torvalds GitHub" in candidates[0].full_name.conflicting_values
+    conflict = candidates[0].full_name.conflicting_values[0]
+    assert conflict["value"] == "Linus Torvalds GitHub"
+    assert conflict["source"] == "github_api"
+    assert conflict["confidence"] == 0.7
     assert len(candidates[0].full_name.provenance) == 2
     
 def test_merge_different_person():
@@ -41,7 +44,10 @@ def test_conflict_resolution():
     
     res = resolve_field(values, "headline") 
     assert res.value == "Big Corp"
-    assert "Startup Inc" in res.conflicting_values
+    conflict = res.conflicting_values[0]
+    assert conflict["value"] == "Startup Inc"
+    assert conflict["source"] == "github_api"
+    assert conflict["confidence"] == 0.7
 
 def test_list_field_union():
     prov1 = Provenance("recruiter.csv", "email", "csv", 1.0)
@@ -69,3 +75,33 @@ def test_skills_merge():
     assert len(res) == 1
     assert res[0].value == "Python"
     assert len(res[0].provenance) == 2
+
+def test_conflicting_values_consistent_shape():
+    prov_csv = Provenance("recruiter.csv", "name", "csv", 1.0)
+    prov_gh = Provenance("github_api", "name", "api", 0.7)
+    
+    # Scalar string
+    res_str = resolve_field([("Alice", prov_csv), ("Bob", prov_gh)], "full_name")
+    assert len(res_str.conflicting_values) == 1
+    assert res_str.conflicting_values[0] == {"value": "Bob", "source": "github_api", "confidence": 0.7}
+    
+    # Dict field (location)
+    loc_csv = {"city": "Portland, OR"}
+    loc_gh = {"city": "Portland"}
+    res_dict = resolve_field([(loc_csv, prov_csv), (loc_gh, prov_gh)], "location")
+    assert len(res_dict.conflicting_values) == 1
+    assert res_dict.conflicting_values[0] == {"value": loc_gh, "source": "github_api", "confidence": 0.7}
+
+def test_disagreement_applies_confidence_penalty():
+    prov_csv = Provenance("recruiter.csv", "name", "csv", 1.0)
+    prov_gh = Provenance("github_api", "name", "api", 0.7)
+    
+    # With conflict
+    values_with_conflict = [("Alice", prov_csv), ("Bob", prov_gh)]
+    res_with = resolve_field(values_with_conflict, "full_name")
+    
+    # Without conflict
+    values_without = [("Alice", prov_csv)]
+    res_without = resolve_field(values_without, "full_name")
+    
+    assert res_with.confidence < res_without.confidence

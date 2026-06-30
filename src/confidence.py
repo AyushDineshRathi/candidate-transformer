@@ -69,26 +69,31 @@ def overall_confidence(candidate: CanonicalCandidate) -> float:
     core_scores = []
     
     # 1. full_name
-    if candidate.full_name:
+    if candidate.full_name and candidate.full_name.value:
         core_scores.append(candidate.full_name.confidence)
     else:
         core_scores.append(0.0)
         
     # 2. emails
-    if candidate.emails:
-        core_scores.append(max(e.confidence for e in candidate.emails))
+    valid_emails = [e.confidence for e in candidate.emails if e.value]
+    if valid_emails:
+        core_scores.append(max(valid_emails))
     else:
         core_scores.append(0.0)
         
     # 3. phones
-    if candidate.phones:
-        core_scores.append(max(p.confidence for p in candidate.phones))
+    valid_phones = [p.confidence for p in candidate.phones if p.value]
+    if valid_phones:
+        core_scores.append(max(valid_phones))
     else:
         core_scores.append(0.0)
         
     # 4. skills
-    if candidate.skills:
-        avg_skill = sum(s.confidence for s in candidate.skills) / len(candidate.skills)
+    valid_skills = [s.confidence for s in candidate.skills if s.value]
+    if valid_skills:
+        # The denominator should probably be the length of candidate.skills 
+        # to penalize empty skill values if any exist, as originally specced
+        avg_skill = sum(valid_skills) / len(candidate.skills)
         core_scores.append(avg_skill)
     else:
         core_scores.append(0.0)

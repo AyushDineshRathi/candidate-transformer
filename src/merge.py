@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 SOURCE_PRIORITY = {
     "recruiter.csv": 2,
+    "ats.json": 1.5,
     "github_api": 1
 }
 
@@ -150,17 +151,27 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
     winner = candidates[0]
     
     conflicting_values = []
-    if len(candidates) > 1:
-        for loser in candidates[1:]:
-            conflicting_values.append(loser["value"])
+    fake_values_and_prov = []
+    
+    for c in candidates:
+        for p in c["provs"]:
+            fake_values_and_prov.append((c["value"], p))
+            if c != winner:
+                conflicting_values.append({
+                    "value": c["value"],
+                    "source": p.source,
+                    "confidence": p.confidence
+                })
             
     all_provs = []
     for c in candidates:
         all_provs.extend(c["provs"])
         
+    combined_conf = field_confidence(fake_values_and_prov, winner["value"])
+        
     return FieldValue(
         value=winner["value"],
-        confidence=winner["confidence"],
+        confidence=combined_conf,
         provenance=all_provs,
         conflicting_values=conflicting_values
     )
@@ -265,6 +276,7 @@ def merge_candidates(extractions: list[RawExtraction]) -> list[CanonicalCandidat
             education=final_education,
             overall_confidence=0.0
         )
+        c.overall_confidence = overall_confidence(c)
         candidates.append(c)
         
     return candidates
