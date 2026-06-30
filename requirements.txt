@@ -1,0 +1,6 @@
+phonenumbers
+pycountry
+requests
+jsonschema
+pytest
+python-dateutil
