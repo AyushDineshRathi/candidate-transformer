@@ -121,7 +121,7 @@ def run_pipeline(csv_path: str | None = None, projection_config_path: str | None
         ext.skills = normalized_skills
         
     logger.info("Stage 3: Merge")
-    candidates = merge_candidates(all_extractions, conf_config=conf_config)
+    candidates = merge_candidates(all_extractions, conf_config=conf_config, db_path=db_path)
     
     logger.info("Stage 4 & 5: Project & Validate")
     config = None
@@ -184,7 +184,14 @@ def run_pipeline(csv_path: str | None = None, projection_config_path: str | None
         "warnings": 0
     }
     
-    suggestions = find_possible_duplicates(candidates)
+    if db_path:
+        from src.storage import list_candidates
+        from src.models import CanonicalCandidate
+        all_cands_dicts = list_candidates(db_path)
+        all_candidates_pool = [CanonicalCandidate.from_dict(d) for d in all_cands_dicts]
+        suggestions = find_possible_duplicates(all_candidates_pool)
+    else:
+        suggestions = find_possible_duplicates(candidates)
     
     final_output = {
         "candidates": [r["output"] for r in results],

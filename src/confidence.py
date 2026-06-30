@@ -33,14 +33,17 @@ def field_confidence(values_and_provenance: list[tuple[Any, Provenance]], winnin
     if not values_and_provenance:
         return 0.0
         
-    supporting_confidences = []
+    source_confidences = {}
     disagreement_exists = False
     
     for val, prov in values_and_provenance:
         if val == winning_value:
-            supporting_confidences.append(prov.confidence)
+            current_conf = source_confidences.get(prov.source, 0.0)
+            source_confidences[prov.source] = max(current_conf, prov.confidence)
         elif val is not None:
             disagreement_exists = True
+            
+    supporting_confidences = list(source_confidences.values())
             
     if not supporting_confidences:
         return 0.0

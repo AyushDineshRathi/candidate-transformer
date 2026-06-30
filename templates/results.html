@@ -4,10 +4,11 @@
     <div style="display: flex; align-items: center; gap: 1rem;">
         <h2 style="margin: 0;">Candidate Results</h2>
         {% if candidates %}
-        <button id="sort-btn" onclick="toggleSort()" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; cursor: pointer;">Sort by Confidence (Descending)</button>
+        <button id="sort-btn" onclick="toggleSort()" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Sort by Confidence (Descending)</button>
         {% endif %}
+        <a href="/download_output" class="btn" style="background: linear-gradient(135deg, #10b981, #059669); margin-right: 1rem;">&#11123; Download Projected JSON</a>
+        <a href="/" class="btn" style="background: rgba(255,255,255,0.1); box-shadow: none;">&larr; Run New Pipeline</a>
     </div>
-    <a href="/" style="color: var(--accent); text-decoration: none; font-weight: 500;">&larr; Run New Pipeline</a>
 </div>
 
 <style>

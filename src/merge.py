@@ -195,47 +195,57 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str, conf_co
         conflicting_values=conflicting_values
     )
 
-def merge_candidates(extractions: list[RawExtraction], conf_config: dict | None = None) -> list[CanonicalCandidate]:
+def merge_candidates(extractions: list[RawExtraction], conf_config: dict | None = None, db_path: str | None = None) -> list[CanonicalCandidate]:
     clusters = cluster_extractions(extractions)
     candidates = []
     
     NAMESPACE_OID = uuid.NAMESPACE_OID
     
     for cluster in clusters:
-        join_key = None
+        cluster_github = None
+        cluster_emails = []
+        cluster_phones = []
         for ext in cluster:
             if ext.links and ext.links[0]:
                 github = ext.links[0].get("github")
-                if github:
-                    join_key = f"github:{github.strip().lower()}"
-                    break
+                if github and not cluster_github:
+                    cluster_github = github.strip().lower()
+            if ext.emails:
+                for email, _ in ext.emails:
+                    if email: cluster_emails.append(email.strip().lower())
+            if ext.phones:
+                for phone, _ in ext.phones:
+                    if phone:
+                        norm_p = normalize_phone(phone)
+                        if norm_p: cluster_phones.append(norm_p)
+                        
+        candidate_id = None
         
-        if not join_key:
-            for ext in cluster:
-                if ext.emails:
-                    for email, _ in ext.emails:
-                        if email:
-                            join_key = f"email:{email.strip().lower()}"
-                            break
-                if join_key:
-                    break
-                    
-        if not join_key:
-            for ext in cluster:
-                if ext.phones:
-                    for phone, _ in ext.phones:
-                        if phone:
-                            norm_p = normalize_phone(phone)
-                            if norm_p:
-                                join_key = f"phone:{norm_p}"
-                                break
-                if join_key:
-                    break
-                    
-        if not join_key:
-            join_key = f"ext:{cluster[0].candidate_id}"
+        if db_path:
+            from src.storage import find_bridging_conflicts, log_bridge_alert, lookup_candidate_by_identifiers
             
-        candidate_id = str(uuid.uuid5(NAMESPACE_OID, join_key))
+            conflicts = find_bridging_conflicts(db_path, cluster_emails, cluster_phones, cluster_github)
+            if len(conflicts) > 1:
+                # Bridging conflict: determine primary using priority rules and log the rest
+                primary_id = lookup_candidate_by_identifiers(db_path, cluster_emails, cluster_phones, cluster_github)
+                if primary_id in conflicts:
+                    conflicts.remove(primary_id)
+                log_bridge_alert(db_path, primary_id, conflicts)
+                candidate_id = primary_id
+            else:
+                candidate_id = lookup_candidate_by_identifiers(db_path, cluster_emails, cluster_phones, cluster_github)
+
+        if not candidate_id:
+            join_key = None
+            if cluster_github:
+                join_key = f"github:{cluster_github}"
+            elif cluster_emails:
+                join_key = f"email:{cluster_emails[0]}"
+            elif cluster_phones:
+                join_key = f"phone:{cluster_phones[0]}"
+            else:
+                join_key = f"ext:{cluster[0].candidate_id}"
+            candidate_id = str(uuid.uuid5(NAMESPACE_OID, join_key))
         
         full_names = []
         emails = []
@@ -247,6 +257,53 @@ def merge_candidates(extractions: list[RawExtraction], conf_config: dict | None 
         skills = []
         experiences = []
         educations = []
+        
+        if db_path and candidate_id:
+            from src.storage import get_candidate
+            existing_cand_dict = get_candidate(db_path, candidate_id)
+            if existing_cand_dict:
+                if existing_cand_dict.get("full_name") and existing_cand_dict["full_name"].get("value"):
+                    for p in existing_cand_dict["full_name"].get("provenance", []):
+                        full_names.append((existing_cand_dict["full_name"]["value"], Provenance(**p)))
+                        
+                for e_dict in existing_cand_dict.get("emails", []):
+                    if e_dict.get("value"):
+                        for p in e_dict.get("provenance", []):
+                            emails.append((e_dict["value"], Provenance(**p)))
+                
+                for p_dict in existing_cand_dict.get("phones", []):
+                    if p_dict.get("value"):
+                        for p in p_dict.get("provenance", []):
+                            phones.append((p_dict["value"], Provenance(**p)))
+                            
+                if existing_cand_dict.get("location") and existing_cand_dict["location"].get("value"):
+                    for p in existing_cand_dict["location"].get("provenance", []):
+                        locations.append((existing_cand_dict["location"]["value"], Provenance(**p)))
+                        
+                if existing_cand_dict.get("headline") and existing_cand_dict["headline"].get("value"):
+                    for p in existing_cand_dict["headline"].get("provenance", []):
+                        headlines.append((existing_cand_dict["headline"]["value"], Provenance(**p)))
+                        
+                if existing_cand_dict.get("years_experience") and existing_cand_dict["years_experience"].get("value") is not None:
+                    for p in existing_cand_dict["years_experience"].get("provenance", []):
+                        years_exp.append((existing_cand_dict["years_experience"]["value"], Provenance(**p)))
+                        
+                for s_dict in existing_cand_dict.get("skills", []):
+                    if s_dict.get("value"):
+                        for p in s_dict.get("provenance", []):
+                            skills.append((s_dict["value"], Provenance(**p)))
+                            
+                if existing_cand_dict.get("experience"):
+                    for exp in existing_cand_dict["experience"]:
+                        experiences.append((exp, Provenance("db", "db", "db", 1.0)))
+                if existing_cand_dict.get("education"):
+                    for edu in existing_cand_dict["education"]:
+                        educations.append((edu, Provenance("db", "db", "db", 1.0)))
+                
+                if existing_cand_dict.get("links"):
+                    valid_links = {k: v for k, v in existing_cand_dict["links"].items() if v}
+                    if valid_links:
+                        links_list.append((valid_links, Provenance("db", "db", "db", 1.0)))
         
         for ext in cluster:
             if ext.full_name: full_names.append(ext.full_name)

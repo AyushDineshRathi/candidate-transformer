@@ -59,7 +59,7 @@ def run_pipeline_route():
     try:
         # Run the same pipeline CLI uses
         # This will write to candidates.sqlite3 in the CWD
-        run_pipeline(
+        pipeline_results = run_pipeline(
             csv_path=csv_path, 
             projection_config_path=config_path, 
             ats_path=ats_path, 
@@ -67,11 +67,22 @@ def run_pipeline_route():
             github_url=github_url, 
             db_path=DB_PATH
         )
+        import json
+        with open("last_run_output.json", "w", encoding="utf-8") as f:
+            json.dump(pipeline_results, f, indent=2)
+            
     except Exception as e:
         logging.exception("Pipeline failed")
         return f"Pipeline execution failed: {e}", 500
         
     return redirect(url_for('results'))
+
+@app.route("/download_output", methods=["GET"])
+def download_output():
+    from flask import send_file
+    if os.path.exists("last_run_output.json"):
+        return send_file(os.path.abspath("last_run_output.json"), as_attachment=True, download_name="pipeline_output.json", mimetype="application/json")
+    return "No output available", 404
 
 @app.route("/results", methods=["GET"])
 def results():
@@ -92,6 +103,12 @@ def search():
         
     candidates = full_text_search(DB_PATH, query)
     return render_template("results.html", candidates=candidates, query=query, explain_candidate=explain_candidate)
+
+@app.route("/clear_db", methods=["POST"])
+def clear_db():
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

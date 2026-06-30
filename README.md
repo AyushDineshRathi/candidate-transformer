@@ -62,6 +62,13 @@ python cli.py serve
 - **Projection**: Resolves dot-notation JSON paths and array-maps to cleanly transform the heavy canonical object schema directly into flexible payload mappings per customer configurations.
 - **Validation**: Absorbs the payloads natively asserting conformity against the JSON schema definitions while explicitly preventing ungraceful pipeline death on corrupt values.
 
+## Identity Resolution & Persistence
+
+By default, the pipeline operates in-memory for single-shot processing. When a SQLite database path is provided via `--db`, the system enables persistent cross-run identity resolution:
+- **Stable IDs**: `candidate_id` is now stable across runs via the `identity_index` table. This maps every known exact identifier (GitHub URL, Email, Phone) to a canonical candidate.
+- **Incremental Enrichment**: Candidates can be incrementally enriched by uploading new sources in separate sessions. New fields and provenance metrics are automatically injected alongside historical data, rather than overwriting previous runs.
+- **Bridging Conflicts**: If a new extraction connects two previously separate candidates (e.g., an extraction containing Alice's email and Bob's phone number), it surfaces a bridging conflict alert for manual review rather than destructively auto-merging them. This fixes a core architectural flaw (silent cross-linking) at the right layer, rather than patching around it.
+
 ## Documented Edge Cases
 
 - **Missing `github_url`**: A CSV row strictly omitted a GitHub URL; the external extraction phase was gracefully skipped, passing solely the CSV variables downstream for the candidate.

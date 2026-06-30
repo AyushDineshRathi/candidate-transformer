@@ -4,6 +4,7 @@ SQLite-backed persistence layer for canonical candidates.
 import sqlite3
 import json
 import logging
+import uuid
 from datetime import datetime, timezone
 from src.models import CanonicalCandidate
 
@@ -47,6 +48,115 @@ def init_db(db_path: str) -> None:
             )
         ''')
         
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS identity_index (
+                identifier_value TEXT,
+                identifier_type TEXT,
+                candidate_id TEXT,
+                PRIMARY KEY (identifier_value, identifier_type)
+            )
+        ''')
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS identity_bridge_alerts (
+                alert_id TEXT PRIMARY KEY,
+                primary_candidate_id TEXT,
+                bridged_candidate_ids TEXT,
+                reason TEXT,
+                score REAL
+            )
+        ''')
+        
+        conn.commit()
+
+def lookup_candidate_by_identifiers(db_path: str, emails: list[str], phones: list[str], github_url: str | None) -> str | None:
+    """
+    Checks identity_index for ANY of these normalized identifiers, in priority order
+    (github > email > phone), and returns the first matching candidate_id found.
+    """
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        if github_url:
+            cursor.execute('SELECT candidate_id FROM identity_index WHERE identifier_value = ? AND identifier_type = "github"', (github_url,))
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+                
+        for email in emails:
+            cursor.execute('SELECT candidate_id FROM identity_index WHERE identifier_value = ? AND identifier_type = "email"', (email,))
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+                
+        for phone in phones:
+            cursor.execute('SELECT candidate_id FROM identity_index WHERE identifier_value = ? AND identifier_type = "phone"', (phone,))
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+                
+    return None
+
+def find_bridging_conflicts(db_path: str, emails: list[str], phones: list[str], github_url: str | None) -> list[str]:
+    """
+    Returns a list of DISTINCT candidate_ids if the new extraction's identifiers 
+    point to MORE THAN ONE existing candidate.
+    """
+    found_candidates = set()
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        
+        if github_url:
+            cursor.execute('SELECT candidate_id FROM identity_index WHERE identifier_value = ? AND identifier_type = "github"', (github_url,))
+            row = cursor.fetchone()
+            if row:
+                found_candidates.add(row[0])
+                
+        for email in emails:
+            cursor.execute('SELECT candidate_id FROM identity_index WHERE identifier_value = ? AND identifier_type = "email"', (email,))
+            row = cursor.fetchone()
+            if row:
+                found_candidates.add(row[0])
+                
+        for phone in phones:
+            cursor.execute('SELECT candidate_id FROM identity_index WHERE identifier_value = ? AND identifier_type = "phone"', (phone,))
+            row = cursor.fetchone()
+            if row:
+                found_candidates.add(row[0])
+                
+    if len(found_candidates) > 1:
+        return list(found_candidates)
+    return []
+
+def register_identifiers(db_path: str, candidate_id: str, emails: list[str], phones: list[str], github_url: str | None) -> None:
+    """
+    Upserts rows into identity_index for every identifier this candidate now has.
+    """
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        if github_url:
+            cursor.execute('INSERT OR REPLACE INTO identity_index (identifier_value, identifier_type, candidate_id) VALUES (?, ?, ?)', (github_url, "github", candidate_id))
+        for email in emails:
+            cursor.execute('INSERT OR REPLACE INTO identity_index (identifier_value, identifier_type, candidate_id) VALUES (?, ?, ?)', (email, "email", candidate_id))
+        for phone in phones:
+            cursor.execute('INSERT OR REPLACE INTO identity_index (identifier_value, identifier_type, candidate_id) VALUES (?, ?, ?)', (phone, "phone", candidate_id))
+        conn.commit()
+
+def log_bridge_alert(db_path: str, primary_id: str, bridged_ids: list[str]) -> None:
+    """
+    Logs an identity bridging alert for manual review.
+    """
+    alert_id = str(uuid.uuid4())
+    bridged_str = ",".join(bridged_ids)
+    reason = "exact_identifier_bridge"
+    score = 0.95
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT OR REPLACE INTO identity_bridge_alerts 
+            (alert_id, primary_candidate_id, bridged_candidate_ids, reason, score)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (alert_id, primary_id, bridged_str, reason, score))
         conn.commit()
 
 def upsert_candidate(db_path: str, candidate: CanonicalCandidate) -> None:
@@ -107,6 +217,16 @@ def upsert_candidate(db_path: str, candidate: CanonicalCandidate) -> None:
         ''', (candidate.candidate_id, searchable_text))
             
         conn.commit()
+
+    # Register identifiers for persistent cross-run matching
+    github_url = None
+    if candidate.links and candidate.links.get("github"):
+        github_url = candidate.links.get("github").strip().lower()
+
+    emails = [e.value.strip().lower() for e in candidate.emails if e.value]
+    phones = [p.value for p in candidate.phones if p.value]
+    
+    register_identifiers(db_path, candidate.candidate_id, emails, phones, github_url)
 
 def get_candidate(db_path: str, candidate_id: str) -> dict | None:
     """

@@ -1,0 +1,27 @@
+{
+  "fields": [
+    {
+      "from": "full_name.value",
+      "path": "CandidateName",
+      "type": "string"
+    },
+    {
+      "from": "emails[0].value",
+      "path": "PrimaryContact",
+      "type": "string"
+    },
+    {
+      "from": "skills[].value",
+      "path": "TechnicalStack",
+      "type": "string[]"
+    },
+    {
+      "from": "overall_confidence",
+      "path": "AI_Match_Score",
+      "type": "float"
+    }
+  ],
+  "include_confidence": false,
+  "include_provenance": false,
+  "on_missing": "null"
+}
