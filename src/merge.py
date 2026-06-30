@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import Any
 
 from src.models import RawExtraction, CanonicalCandidate, FieldValue, Provenance
+from src.confidence import field_confidence, overall_confidence
 
 logger = logging.getLogger(__name__)
 
@@ -92,15 +93,23 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
     
     if field_name in list_fields:
         val_map = defaultdict(list)
+        actual_vals = {}
         for val, prov in values:
             if val is not None:
-                key = str(val).strip().lower() if isinstance(val, str) else val
-                val_map[(key, val)].append(prov)
+                if isinstance(val, dict):
+                    key = str(sorted(val.items()))
+                elif isinstance(val, str):
+                    key = val.strip().lower()
+                else:
+                    key = str(val)
+                val_map[key].append(prov)
+                actual_vals[key] = val
                 
         results = []
         for k, provs in val_map.items():
-            actual_val = k[1] if isinstance(k, tuple) else k
-            combined_conf = max((p.confidence for p in provs), default=0.0)
+            actual_val = actual_vals[k]
+            fake_values_and_prov = [(actual_val, p) for p in provs]
+            combined_conf = field_confidence(fake_values_and_prov, actual_val)
             results.append(FieldValue(
                 value=actual_val,
                 confidence=combined_conf,
@@ -109,15 +118,19 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
         return results
 
     val_map = defaultdict(list)
+    actual_vals = {}
     for val, prov in values:
         if val is not None:
             if isinstance(val, dict):
                 if not any(v for v in val.values()):
                     continue
                 key = str(sorted(val.items()))
-                val_map[(key, val)].append(prov)
+            elif isinstance(val, str):
+                key = val.strip().lower()
             else:
-                val_map[val].append(prov)
+                key = str(val)
+            val_map[key].append(prov)
+            actual_vals[key] = val
                 
     if not val_map:
         return None
@@ -125,7 +138,7 @@ def resolve_field(values: list[tuple[Any, Provenance]], field_name: str) -> Any:
     candidates = []
     for k, provs in val_map.items():
         priority = get_source_priority(provs)
-        actual_val = k[1] if isinstance(k, tuple) and isinstance(k[0], str) else k
+        actual_val = actual_vals[k]
         candidates.append({
             "value": actual_val,
             "provs": provs,

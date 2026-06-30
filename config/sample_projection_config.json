@@ -1,1 +1,11 @@
-{}
+{
+  "fields": [
+    {"path": "full_name", "from": "full_name.value", "type": "string", "required": true},
+    {"path": "primary_email", "from": "emails[0].value", "type": "string", "required": true},
+    {"path": "phone", "from": "phones[0].value", "type": "string", "normalize": "E164"},
+    {"path": "skills", "from": "skills[].value", "type": "string[]", "normalize": "canonical"}
+  ],
+  "include_confidence": true,
+  "include_provenance": false,
+  "on_missing": "null"
+}

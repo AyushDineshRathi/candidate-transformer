@@ -33,5 +33,7 @@ dist/
 .DS_Store
 Thumbs.db
 
-src/__pycache__
-tests/__pycache__
+# Project specific generated files
+output.json
+output_default.json
+output_custom.json

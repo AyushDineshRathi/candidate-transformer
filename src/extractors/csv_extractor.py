@@ -82,6 +82,14 @@ def extract_from_csv(path: str) -> list[RawExtraction]:
                     prov = Provenance("recruiter.csv", "location", "csv_row", 1.0)
                     extraction.location = (loc_dict, prov)
                 
+                # If we didn't extract any known field (garbage row), skip it
+                if not any([
+                    extraction.full_name, extraction.emails, extraction.phones, 
+                    extraction.experience, extraction.links, extraction.location
+                ]):
+                    logger.warning("No known fields found in row, skipping.")
+                    continue
+                    
                 extractions.append(extraction)
                 
     except FileNotFoundError as e:
