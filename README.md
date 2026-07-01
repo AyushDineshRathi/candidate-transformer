@@ -2,7 +2,7 @@
 
 A robust, type-safe data engineering pipeline in Python that extracts, normalizes, deduplicates, and projects candidate profiles from fragmented CSV, JSON ATS exports, and GitHub REST API sources into a unified, clean, and highly configurable canonical format.
 
-**[Demo Video Link]** *(Insert YouTube/Loom link here)*
+**[Demo Video Link](https://drive.google.com/file/d/1XaMDutzGM_jlPfPxQlnV_HotyyCLAeq9/view?usp=sharing)**
 
 ## Setup Instructions
 
